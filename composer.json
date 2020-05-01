@@ -1,0 +1,23 @@
+{
+  "name": "albatiqy/slimlibs",
+  "type": "library",
+  "description": "Librari untuk slim 4",
+  "authors": [
+    {
+      "name": "Ahmad Fauzi",
+      "email": "fauzi.ahmad@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Albatiqy\\": "src"
+    },
+    "files": [
+      "autoload.php"
+    ]
+  }
+}
