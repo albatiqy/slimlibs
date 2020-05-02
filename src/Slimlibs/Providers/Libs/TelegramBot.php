@@ -39,6 +39,9 @@ final class TelegramBot {
         if (!$console) {
             throw new \Exception('serve harus dijalankan dalam mode cli');
         }
+        $fname = \APP_DIR . '/var/configs/chtime.txt';
+        \file_put_contents($fname, \date('YmdHis'), \FILE_APPEND);
+
         try {
             $queue = $this->getChannelQueue();
             foreach ($queue as $row) {
@@ -158,11 +161,17 @@ final class TelegramBot {
         if ($result->ok) {
             if (\count($result->result)>0) {
                 foreach ($result->result as $update) {
-                    $from = $update->message->from;
-                    if (!\array_key_exists('U'.$from->id, $this->users)) {
-                        $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name, $from->username, $from->language_code);
+                    $chat = $update->message->chat;
+                    switch ($chat->type) {
+                        case 'private':
+                            if (\property_exists($update->message, 'from')) {
+                                $from = $update->message->from;
+                                if (!\array_key_exists('U'.$from->id, $this->users)) {
+                                    $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name, $from->username, $from->language_code);
+                                }
+                            }
+                        break;
                     }
-                    //echo $from->username.': '.$update->message->text."\r\n";
                     if (\property_exists($update->message, 'entities')) {
                         $entities = $update->message->entities;
                     }
