@@ -5,6 +5,7 @@ use Albatiqy\Slimlibs\Command\AbstractCommand;
 use Albatiqy\Slimlibs\Support\Helper\Fs;
 use Albatiqy\Slimlibs\Support\Util\DocBlock;
 use Albatiqy\Slimlibs\Services\Actions;
+use Albatiqy\Slimlibs\Support\Helper\CodeOut;
 
 /**
  * Slimlibs tools
@@ -32,6 +33,7 @@ final class Slimlibs extends AbstractCommand {
         $this->createVarDir('/commands');
         $this->createVarDir('/configs');
         $this->createVarDir('/jobs');
+        $this->createVarDir('/schedules');
         $this->createVarDir('/log');
         $this->createVarDir('/resources');
         $this->createVarDir('/resources/config');
@@ -70,7 +72,7 @@ final class Slimlibs extends AbstractCommand {
                 $basef = '\\App\\Actions'.\str_replace('/','\\',\substr($path, $cpos).'\\'.$file->getBasename('.'.$file->getExtension()));
                 $this->writeLine('mapping '.$basef);
                 $class = new \ReflectionClass($basef);
-                $actions[$class->getName()] = $this->parseAuthCommand($class);
+                $actions[$class->getName()] = $this->parseAuthNotation($class);
             }
         }
         $da_actions = Actions::getInstance();
@@ -78,6 +80,43 @@ final class Slimlibs extends AbstractCommand {
             $this->success("TRANSACTION SUCCESS");
         } else {
             $this->error("TRANSACTION ERROR");
+        }
+    }
+
+    /**
+     * Inisialisasi schedule
+     *
+     * @alias [initschedules]
+     */
+    public function initSchedules() {
+        $dir = \LIBS_DIR . '/src/Slimlibs/Command/Schedules';
+        $schedules = [];
+        if (\is_dir($dir)) {
+            $iterator = new \DirectoryIterator($dir);
+            foreach ($iterator as $fileinfo) {
+                if ($fileinfo->isFile()) {
+                    $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
+                    $this->writeLine('mapping '.$tomap);
+                    $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Schedules\\' . $tomap);
+                    $schedules[$reflect->getConstant('MAP')] = $reflect;
+                }
+            }
+        }
+        $dir = \APP_DIR . '/src/Schedules';
+        $iterator = new \DirectoryIterator($dir);
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isFile()) {
+                $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
+                $this->writeLine('mapping '.$tomap);
+                $reflect = new \ReflectionClass('\\App\\Schedules\\' . $tomap);
+                $schedules[$reflect->getConstant('MAP')] = $reflect;
+            }
+        }
+        foreach ($schedules as $map=>$reflect) {
+            $job_reflect = new \ReflectionClass($reflect->getConstant('JOB_CLASS'));
+            $job_instance = $job_reflect->newInstance($this->container);
+            $fileout = "<?php\nreturn [\n    \"jobname\" => \"" . $job_instance->getMapName() . "\",\n    \"schedule\" => \"".$reflect->getConstant('SCHEDULE')."\",\n    \"data\" => " . CodeOut::fromArray($reflect->getConstant('JOB_DATA')) . "\n];";
+            \file_put_contents(\APP_DIR . '/var/schedules/' . $map . '.php', $fileout);
         }
     }
 
@@ -92,7 +131,7 @@ final class Slimlibs extends AbstractCommand {
         }
     }
 
-    private function parseAuthCommand($class) {
+    private function parseAuthNotation($class) {
         $doc_block = new DocBlock($class);
         $result = 0;
         if ($doc_block->tagExists('authorize')) {

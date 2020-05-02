@@ -80,79 +80,102 @@ final class JobRunner extends AbstractCommand {
      * @alias [serve]
      */
     public function serve() { //==============logging
-        $da_jobs = Jobs::getInstance();
-        $jobs = $da_jobs->remains();
-        foreach ($jobs as $job) {
-            $fileload = \APP_DIR . '/var/jobs/' . $job->job . '.php';
-            if (!\file_exists($fileload)) {
-                $da_jobs->dbUpdate([
-                    'logs' => 'job tidak ditemukan',
-                    'id' => $job->id
-                ]);
-            } else {
-                $cmdmanifest = require $fileload;
-                $reflect = $cmdmanifest['handler'];
-                $reflect = new \ReflectionClass($reflect);
+        $dir = \APP_DIR . '/var/schedules';
+        $dirs = \array_diff(\scandir($dir), ['..', '.']);
+        $trunc = \substr((string)\time(), 0, -1).'0';
+        $time = (int)$trunc;
+        if (\count($dirs) > 0) {
+            $process = [];
+            foreach ($dirs as $mfile) {
+                $manifest = require $dir.'/'.$mfile;
+                if ($time%(int)$manifest['schedule']==0) {
+                    $process[$manifest['jobname']] = $manifest['data'];
+                }
+            }
+            foreach ($process as $job=>$data) {
+                $fileload = \APP_DIR . '/var/jobs/' . $job . '.php';
+                if (!\file_exists($fileload)) {
+                    $this->log('job tidak ditemukan');
+                } else {
+                    $cmdmanifest = require $fileload;
+                    $reflect = $cmdmanifest['handler'];
+                    $reflect = new \ReflectionClass($reflect); // chk abstract command?
 
-                $instance = $reflect->newInstance($this->container);
-                $props = $cmdmanifest['options']['props'];
-                $data = \json_decode($job->data, true);
-                foreach ($data as $k => $v) {
-                    $property = $reflect->getProperty($props[$k]['name']);
-                    $property->setValue($instance, $v);
+                    $instance = $reflect->newInstance($this->container);
+                    $props = $cmdmanifest['options']['props'];
+                    foreach ($data as $k => $v) {
+                        $property = $reflect->getProperty($props[$k]['name']);
+                        $property->setValue($instance, $v);
+                    }
+                    $output = '';
+                    $logs = '';
+                    try {
+                        $result = $instance->run();
+                        $output = $instance->getOutput();
+                        $logs = $instance->getLogs();
+                        if ($output) {
+                            $this->log('Output : '. $output);
+                        }
+                        if ($logs) {
+                            $this->log('Logs : '. $logs);
+                        }
+                    } catch (\Exception $e) {
+                        $this->log('Error Logs : '.$e->getMessage()."\r\n".$logs);
+                        $this->log('Output : '. $output);
+                    }
                 }
-                $output = '';
-                $logs = '';
-                try {
-                    $result = $instance->run();
-                    $output = $instance->getOutput();
-                    $logs = $instance->getLogs();
-                    //$da_jobs->flagFinished($job->id);
-                    $da_jobs->dbUpdate([
-                        'logs' => \substr($logs,0,999),
-                        'output' => \substr($output,0,1999),
-                        'state' => ($result===true?1:0),
-                        'id' => $job->id
-                    ]);
-                } catch (\Exception $e) {
-                    $da_jobs->dbUpdate([
-                        'logs' => \substr($e->getMessage()."\r\n".$logs,0,999),
-                        'output' => \substr($output,0,1999),
-                        'id' => $job->id
-                    ]);
-                }
+            }
+            if (\count($process)==0) {
+                $this->log('no schedule at: '.$trunc);
             }
         }
 
-        $settings = $this->container->get('settings');
-        foreach ($settings['jobs'] as $job=>$data) {
-            $fileload = \APP_DIR . '/var/jobs/' . $job . '.php';
-            if (!\file_exists($fileload)) {
-                $this->log('job tidak ditemukan');
-            } else {
-                $cmdmanifest = require $fileload;
-                $reflect = $cmdmanifest['handler'];
-                $reflect = new \ReflectionClass($reflect); // chk abstract command?
+        if ($time%60==0) {
+            $da_jobs = Jobs::getInstance();
+            $jobs = $da_jobs->remains();
+            foreach ($jobs as $job) {
+                $fileload = \APP_DIR . '/var/jobs/' . $job->job . '.php';
+                if (!\file_exists($fileload)) {
+                    $da_jobs->dbUpdate([
+                        'logs' => 'job tidak ditemukan',
+                        'id' => $job->id
+                    ]);
+                } else {
+                    $cmdmanifest = require $fileload;
+                    $reflect = $cmdmanifest['handler'];
+                    $reflect = new \ReflectionClass($reflect);
 
-                $instance = $reflect->newInstance($this->container);
-                $props = $cmdmanifest['options']['props'];
-                foreach ($data as $k => $v) {
-                    $property = $reflect->getProperty($props[$k]['name']);
-                    $property->setValue($instance, $v);
-                }
-                $output = '';
-                $logs = '';
-                try {
-                    $result = $instance->run();
-                    $output = $instance->getOutput();
-                    $logs = $instance->getLogs();
-                    $this->log('Output : '. $output);
-                    $this->log('Logs : '. $logs);
-                } catch (\Exception $e) {
-                    $this->log('Error Logs : '.$e->getMessage()."\r\n".$logs);
-                    $this->log('Output : '. $output);
+                    $instance = $reflect->newInstance($this->container); // check parent type
+                    $props = $cmdmanifest['options']['props'];
+                    $data = \json_decode($job->data, true);
+                    foreach ($data as $k => $v) {
+                        $property = $reflect->getProperty($props[$k]['name']);
+                        $property->setValue($instance, $v);
+                    }
+                    $output = '';
+                    $logs = '';
+                    try {
+                        $result = $instance->run();
+                        $output = $instance->getOutput();
+                        $logs = $instance->getLogs();
+                        //$da_jobs->flagFinished($job->id);
+                        $da_jobs->dbUpdate([
+                            'logs' => \substr($logs,0,1000),
+                            'output' => \substr($output,0,2000),
+                            'state' => ($result===true?1:0),
+                            'id' => $job->id
+                        ]);
+                    } catch (\Exception $e) {
+                        $da_jobs->dbUpdate([
+                            'logs' => \substr($e->getMessage()."\r\n".$logs,0,1000),
+                            'output' => \substr($output,0,2000),
+                            'id' => $job->id
+                        ]);
+                    }
                 }
             }
+        } else {
+            $this->log('no jobs at: '.$trunc);
         }
     }
 

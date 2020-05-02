@@ -5,7 +5,6 @@ $settings = [
     'log_dir' => APP_DIR . '/var/log',
     'backend_path' => '/admin',
     'login_path' => '/login',
-    'jobs' => [],
     'auth_provider' => App\Providers\Auth\Db::class,
     'cache'=>[
         'base_dir' => APP_DIR . '/var/cache',

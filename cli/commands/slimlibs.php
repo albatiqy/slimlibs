@@ -23,6 +23,14 @@ return [
                     ],
                 "args" => [
                     ]
+                ],
+            "initschedules" => [
+                "help" => "Inisialisasi schedule",
+                "name" => "initSchedules",
+                "opts" => [
+                    ],
+                "args" => [
+                    ]
                 ]
             ]
         ]

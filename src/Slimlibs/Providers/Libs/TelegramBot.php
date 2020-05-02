@@ -77,13 +77,17 @@ final class TelegramBot {
             'chat_id' => '@'.$this->channelName,
             'text' => $text
         ];
-        $url .= '?'.\http_build_query($query);
+        $body = \http_build_query($query);
 
-        $ch = \curl_init($url);
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+        $ch = \curl_init();
+        \curl_setopt($ch, \CURLOPT_URL, $url);
+        \curl_setopt($ch, \CURLOPT_POST, 1);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $body);
         \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
-            'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . \strlen($body),
+            'Accept: application/json'
         ]);
         $result = \curl_exec($ch);
         if (\curl_errno($ch)) {
@@ -107,13 +111,17 @@ final class TelegramBot {
             'chat_id' => $chat_id,
             'text' => $text
         ];
-        $url .= '?'.\http_build_query($query);
+        $body = \http_build_query($query);
 
-        $ch = \curl_init($url);
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+        $ch = \curl_init();
+        \curl_setopt($ch, \CURLOPT_URL, $url);
+        \curl_setopt($ch, \CURLOPT_POST, 1);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $body);
         \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
-            'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . \strlen($body),
+            'Accept: application/json'
         ]);
         $result = \curl_exec($ch);
         if (\curl_errno($ch)) {
@@ -132,18 +140,20 @@ final class TelegramBot {
         $url = 'https://api.telegram.org/bot'.$this->token.'/getUpdates';
 
         $updateState = $this->getUpdateState();
-        if ($updateState) {
-            $query = [
-                'offset' => $updateState
-            ];
-            $url .= '?'.\http_build_query($query);
-        }
+        $query = [
+            'offset' => $updateState??0
+        ];
+        $body = \http_build_query($query);
 
-        $ch = \curl_init($url);
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+        $ch = \curl_init();
+        \curl_setopt($ch, \CURLOPT_URL, $url);
+        \curl_setopt($ch, \CURLOPT_POST, 1);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $body);
         \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
-            'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . \strlen($body),
+            'Accept: application/json'
         ]);
         $result = \curl_exec($ch);
         if (\curl_errno($ch)) {
