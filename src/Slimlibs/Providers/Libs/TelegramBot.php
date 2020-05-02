@@ -40,7 +40,7 @@ final class TelegramBot {
             throw new \Exception('serve harus dijalankan dalam mode cli');
         }
         $fname = \APP_DIR . '/var/configs/chtime.txt';
-        \file_put_contents($fname, \date('YmdHis'), \FILE_APPEND);
+        \file_put_contents($fname, \date('YmdHis')."\r\n", \FILE_APPEND);
 
         try {
             $queue = $this->getChannelQueue();
