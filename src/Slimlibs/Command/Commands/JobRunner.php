@@ -45,18 +45,16 @@ final class JobRunner extends AbstractCommand {
      */
     public function remap() {
         $dir = \LIBS_DIR . '/src/Slimlibs/Command/Jobs';
-        if (\is_dir($dir)) {
-            $iterator = new \DirectoryIterator($dir);
-            foreach ($iterator as $fileinfo) {
-                if ($fileinfo->isFile()) {
-                    $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
-                    $this->writeLine('mapping '.$tomap);
-                    $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Jobs\\' . $tomap);
-                    // check parent here
-                    $result = $this->parseClass($reflect);
-                    $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
-                    \file_put_contents(\APP_DIR . '/var/jobs/' . $reflect->getConstant('MAP') . '.php', $fileout);
-                }
+        $iterator = new \DirectoryIterator($dir);
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isFile()) {
+                $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
+                $this->writeLine('mapping '.$tomap);
+                $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Jobs\\' . $tomap);
+                // check parent here
+                $result = $this->parseClass($reflect);
+                $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
+                \file_put_contents(\APP_DIR . '/var/jobs/' . $reflect->getConstant('MAP') . '.php', $fileout);
             }
         }
         $dir = \APP_DIR . '/src/Jobs';
@@ -79,7 +77,7 @@ final class JobRunner extends AbstractCommand {
      *
      * @alias [serve]
      */
-    public function serve() { //==============logging
+    public function serve() { //==============logging & locking
         $dir = \APP_DIR . '/var/schedules';
         $dirs = \array_diff(\scandir($dir), ['..', '.']);
         $trunc = \substr((string)\time(), 0, -1).'0';
