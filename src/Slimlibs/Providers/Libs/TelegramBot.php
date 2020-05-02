@@ -161,19 +161,21 @@ final class TelegramBot {
         if ($result->ok) {
             if (\count($result->result)>0) {
                 foreach ($result->result as $update) {
-                    $chat = $update->message->chat;
-                    switch ($chat->type) {
-                        case 'private':
-                            if (\property_exists($update->message, 'from')) {
-                                $from = $update->message->from;
-                                if (!\array_key_exists('U'.$from->id, $this->users)) {
-                                    $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name, $from->username, $from->language_code);
+                    if (\property_exists($update, 'message')) {
+                        $chat = $update->message->chat;
+                        switch ($chat->type) {
+                            case 'private':
+                                if (\property_exists($update->message, 'from')) {
+                                    $from = $update->message->from;
+                                    if (!\array_key_exists('U'.$from->id, $this->users)) {
+                                        $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name, $from->username, $from->language_code);
+                                    }
                                 }
-                            }
-                        break;
-                    }
-                    if (\property_exists($update->message, 'entities')) {
-                        $entities = $update->message->entities;
+                            break;
+                        }
+                        if (\property_exists($update->message, 'entities')) {
+                            $entities = $update->message->entities;
+                        }
                     }
                 }
                 $last = \end($result->result);
