@@ -182,6 +182,26 @@ final class TelegramBot {
                         }
                         if (\property_exists($update->message, 'entities')) {
                             $entities = $update->message->entities;
+                            foreach ($entities as $entity) {
+                                if ($entity->type=='bot_command') {
+                                    $command = \substr($update->text, $entity->offset, $entity->length);
+                                    switch ($command) {
+                                        case '/date':
+                                            if ($chat->type=='private') {
+                                                $this->sendUser($chat->id, \date('d/m/Y H:i:s'));
+                                            }
+                                        break;
+                                        default:
+                                            if ($chat->type=='private') {
+                                                $this->sendUser($chat->id, 'hello '.$chat->first_name.' '.$chat->last_name);
+                                            }
+                                    }
+                                }
+                            }
+                        } else {
+                            if ($chat->type=='private') {
+                                $this->sendUser($chat->id, $update->text);
+                            }
                         }
                     }
                 }
@@ -274,6 +294,8 @@ final class TelegramBot {
     private function saveUpdateState($updateId) {
         $sql = "INSERT INTO sys_configs (k,v) VALUES ('telegram.lastUpdateId',:v) ON DUPLICATE KEY UPDATE v=:v2";
         $stmt = $this->db->prepare($sql);
+        $updateId = (int)$updateId;
+        $updateId++;
         $stmt->execute([':v' => $updateId, ':v2' => $updateId]);
     }
 
