@@ -7,7 +7,7 @@ final class ListTmpFiles extends AbstractTelegramCommand {
 
     protected const MAP = 'lstmpfiles';
 
-    protected function run($bot) {
+    public function run($bot) {
         return 'mbelgedes';
     }
 }

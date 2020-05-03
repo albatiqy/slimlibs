@@ -7,7 +7,7 @@ abstract class AbstractTelegramCommand {
 
     protected $container;
 
-    abstract protected function run($bot);
+    abstract public function run($bot);
 
     public function __construct($container) {
         $this->container = $container;
