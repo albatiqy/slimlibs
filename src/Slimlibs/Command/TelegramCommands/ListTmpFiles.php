@@ -7,7 +7,9 @@ final class ListTmpFiles extends AbstractTelegramCommand {
 
     protected const MAP = 'lstmpfiles';
 
-    public function run($bot) {
-        return 'mbelgedes';
+    public function run($message, $bot) {
+        if ($message->chat->type=='private') {
+            $bot->sendUser($message->chat->id, 'mbelgedes');
+        }
     }
 }

@@ -34,10 +34,10 @@ final class TelegramBot {
         $this->container = $container;
     }
 
-    public function serve() {
+    public function listen() {
         $console = \PHP_SAPI == 'cli' ? true : false;
         if (!$console) {
-            throw new \Exception('serve harus dijalankan dalam mode cli');
+            throw new \Exception('listen harus dijalankan dalam mode cli');
         }
         try {
             $queue = $this->getChannelQueue();
@@ -68,7 +68,7 @@ final class TelegramBot {
         }
     }
 
-    private function sendChannel($text) {
+    public function sendChannel($text) {
         if (!$this->token) {
             return null;
         }
@@ -102,7 +102,7 @@ final class TelegramBot {
         return $result;
     }
 
-    private function sendUser($chat_id, $text) {
+    public function sendUser($chat_id, $text) {
         if (!$this->token) {
             return null;
         }
@@ -170,41 +170,38 @@ final class TelegramBot {
             if (\count($result->result)>0) {
                 foreach ($result->result as $update) {
                     if (\property_exists($update, 'message')) {
-                        $chat = $update->message->chat;
-                        switch ($chat->type) {
+                        $message = $update->message;
+                        switch ($message->chat->type) {
                             case 'private':
-                                if (\property_exists($update->message, 'from')) {
-                                    $from = $update->message->from;
+                                if (\property_exists($message, 'from')) {
+                                    $from = $message->from;
                                     if (!\array_key_exists('U'.$from->id, $this->users)) {
                                         $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name, $from->username, $from->language_code);
                                     }
                                 }
                             break;
                         }
-                        if (\property_exists($update->message, 'entities')) {
-                            $entities = $update->message->entities;
+                        if (\property_exists($message, 'entities')) { //if text
+                            $entities = $message->entities;
                             foreach ($entities as $entity) {
                                 if ($entity->type=='bot_command') {
-                                    $command = \substr($update->message->text, $entity->offset, $entity->length);
+                                    $command = \substr($message->text, $entity->offset, $entity->length);
                                     $fileload = \APP_DIR . '/var/telegramcmds' . $command . '.php';
                                     if (\file_exists($fileload)) {
                                         $classHandler = require $fileload;
                                         $reflect = new \ReflectionClass($classHandler);
                                         $instance = $reflect->newInstance($this->container);
-                                        $response = $instance->run($this);
-                                        if ($chat->type=='private') {
-                                            $this->sendUser($chat->id, $response);
-                                        }
+                                        $instance->run($message, $this);
                                     } else {
-                                        if ($chat->type=='private') {
-                                            $this->sendUser($chat->id, 'hello '.$chat->first_name.' '.$chat->last_name);
+                                        if ($message->chat->type=='private') {
+                                            $this->sendUser($message->chat->id, 'hello '.$message->chat->first_name.' '.$message->chat->last_name);
                                         }
                                     }
                                 }
                             }
                         } else {
-                            if ($chat->type=='private') {
-                                $this->sendUser($chat->id, $update->message->text);
+                            if ($message->chat->type=='private') {
+                                $this->sendUser($message->chat->id, $message->text);
                             }
                         }
                     }

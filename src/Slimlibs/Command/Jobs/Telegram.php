@@ -15,7 +15,7 @@ final class Telegram extends AbstractJob {
     protected function handle() {
         return $this->locking(function(){
             $telegram = $this->container->get(TelegramBot::class);
-            $telegram->serve();
+            $telegram->listen();
         });
     }
 }
