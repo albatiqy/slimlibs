@@ -184,7 +184,7 @@ final class TelegramBot {
                             $entities = $update->message->entities;
                             foreach ($entities as $entity) {
                                 if ($entity->type=='bot_command') {
-                                    $command = \substr($update->text, $entity->offset, $entity->length);
+                                    $command = \substr($update->message->text, $entity->offset, $entity->length);
                                     switch ($command) {
                                         case '/date':
                                             if ($chat->type=='private') {
@@ -200,7 +200,7 @@ final class TelegramBot {
                             }
                         } else {
                             if ($chat->type=='private') {
-                                $this->sendUser($chat->id, $update->text);
+                                $this->sendUser($chat->id, $update->message->text);
                             }
                         }
                     }
