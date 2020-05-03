@@ -33,7 +33,9 @@ final class Html {
         }
         $MediaEmbed = new \MediaEmbed\MediaEmbed();
         $dom = new \DOMDocument();
+        \libxml_use_internal_errors(true);
         $dom->loadHTML($html);
+        \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
         $figures = $xpath->query('//figure[@class="media"]');
         foreach ($figures as $figure) {
@@ -60,7 +62,9 @@ final class Html {
         }
         $MediaEmbed = new \MediaEmbed\MediaEmbed();
         $dom = new \DOMDocument();
+        \libxml_use_internal_errors(true);
         $dom->loadHTML($html);
+        \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
         $figures = $xpath->query('//figure[@class="media"]');
         foreach ($figures as $figure) {
@@ -73,7 +77,9 @@ final class Html {
                 ]);
                 $htmlEmbed = $MediaObject->getEmbedCode();
                 $mediaDoc = new \DOMDocument();
+                \libxml_use_internal_errors(true);
                 $mediaDoc->loadHTML($htmlEmbed);
+                \libxml_use_internal_errors(false);
                 $figure->parentNode->replaceChild($dom->importNode($mediaDoc->getElementsByTagName('body')->item(0)->childNodes[0],true), $figure);
             }
         }

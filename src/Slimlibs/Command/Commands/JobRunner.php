@@ -6,6 +6,7 @@ use Albatiqy\Slimlibs\Command\TableFormatter;
 use Albatiqy\Slimlibs\Services\Jobs;
 use Albatiqy\Slimlibs\Support\Helper\CodeOut;
 use Albatiqy\Slimlibs\Support\Util\DocBlock;
+use Albatiqy\Slimlibs\Support\Helper\Fs;
 
 /**
  * Manajemen job
@@ -44,6 +45,9 @@ final class JobRunner extends AbstractCommand {
      * @alias [remap]
      */
     public function remap() {
+        $vdir = \APP_DIR . '/var/jobs';
+        Fs::rmDir($vdir, false);
+
         $dir = \LIBS_DIR . '/src/Slimlibs/Command/Jobs';
         $iterator = new \DirectoryIterator($dir);
         foreach ($iterator as $fileinfo) {
@@ -54,7 +58,7 @@ final class JobRunner extends AbstractCommand {
                 // check parent here
                 $result = $this->parseClass($reflect);
                 $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
-                \file_put_contents(\APP_DIR . '/var/jobs/' . $reflect->getConstant('MAP') . '.php', $fileout);
+                \file_put_contents($vdir . '/' . $reflect->getConstant('MAP') . '.php', $fileout);
             }
         }
         $dir = \APP_DIR . '/src/Jobs';
@@ -67,7 +71,7 @@ final class JobRunner extends AbstractCommand {
                 // check parent here
                 $result = $this->parseClass($reflect);
                 $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
-                \file_put_contents(\APP_DIR . '/var/jobs/' . $reflect->getConstant('MAP') . '.php', $fileout);
+                \file_put_contents($vdir . '/' . $reflect->getConstant('MAP') . '.php', $fileout);
             }
         }
     }

@@ -29,27 +29,11 @@ array_shift($argv);
 
 $settings = require LIBS_DIR . '/requires/settings.php';
 //slimlibs_monolog_errors($settings['monolog']);
-ini_set('error_log', $settings['log_dir'] . '/php-error.log');
+//ini_set('error_log', $settings['log_dir'] . '/php-error.log');
 $container = (require LIBS_DIR . '/requires/container.php')($settings);
+set_error_handler($container->get('php_error_handler'));
+
 $app = (require LIBS_DIR . '/requires/app.php')($container);
 
 $cli = new Albatiqy\Slimlibs\Command\Cli($argv);
 $cli->run($container);
-
-/*
-$iterate = function ($base_dir) {
-$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base_dir), RecursiveIteratorIterator::SELF_FIRST);
-foreach ($iterator as $fileinfo) {
-if ($fileinfo->isFile()) {
-$path = $fileinfo->getPath();
-$filename = $fileinfo->getBasename();
-$cli->info($filename);
-}
-}
-};
-$iterate(LIBS_DIR . '/cli/commands');
- */
-
-//$response = $app->handle($request);
-//$responseEmitter = new Slim\ResponseEmitter();
-//$responseEmitter->emit($response);

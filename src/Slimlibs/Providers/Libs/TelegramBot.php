@@ -166,7 +166,7 @@ final class TelegramBot {
             throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
         }
         if ($result->ok) {
-            \file_put_contents(\APP_DIR . '/var/tmp/telegram-updates.json', \json_encode($result->result));
+            //\file_put_contents(\APP_DIR . '/var/tmp/telegram-updates.json', \json_encode($result->result));
             if (\count($result->result)>0) {
                 foreach ($result->result as $update) {
                     if (\property_exists($update, 'message')) {

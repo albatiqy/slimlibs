@@ -112,11 +112,13 @@ final class Slimlibs extends AbstractCommand {
                 $schedules[$reflect->getConstant('MAP')] = $reflect;
             }
         }
+        $vdir = \APP_DIR . '/var/schedules';
+        Fs::rmDir($vdir, false);
         foreach ($schedules as $map=>$reflect) {
             $job_reflect = new \ReflectionClass($reflect->getConstant('JOB_CLASS'));
             $job_instance = $job_reflect->newInstance($this->container);
             $fileout = "<?php\nreturn [\n    \"jobname\" => \"" . $job_instance->getMapName() . "\",\n    \"schedule\" => \"".$reflect->getConstant('SCHEDULE')."\",\n    \"data\" => " . CodeOut::fromArray($reflect->getConstant('JOB_DATA')) . "\n];";
-            \file_put_contents(\APP_DIR . '/var/schedules/' . $map . '.php', $fileout);
+            \file_put_contents($vdir. '/' . $map . '.php', $fileout);
         }
     }
 
