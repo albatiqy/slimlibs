@@ -111,10 +111,10 @@ final class JobRunner extends AbstractCommand {
                         $result = $instance->run();
                         $output = $instance->getOutput();
                         $logs = $instance->getLogs();
-                        if ($output) {
+                        if (\trim($output)) {
                             $this->log('Output : '. $output);
                         }
-                        if ($logs) {
+                        if (\trim($logs)) {
                             $this->log('Logs : '. $logs);
                         }
                     } catch (\Exception $e) {
@@ -122,9 +122,6 @@ final class JobRunner extends AbstractCommand {
                         $this->log('Output : '. $output);
                     }
                 }
-            }
-            if (\count($process)==0) {
-                $this->log('no schedule at: '.$trunc);
             }
         }
 
@@ -172,8 +169,6 @@ final class JobRunner extends AbstractCommand {
                     }
                 }
             }
-        } else {
-            $this->log('no jobs at: '.$trunc);
         }
     }
 
