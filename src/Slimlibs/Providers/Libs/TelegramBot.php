@@ -186,16 +186,19 @@ final class TelegramBot {
                             foreach ($entities as $entity) {
                                 if ($entity->type=='bot_command') {
                                     $command = \substr($update->message->text, $entity->offset, $entity->length);
-                                    switch ($command) {
-                                        case '/date':
-                                            if ($chat->type=='private') {
-                                                $this->sendUser($chat->id, \date('d/m/Y H:i:s'));
-                                            }
-                                        break;
-                                        default:
-                                            if ($chat->type=='private') {
-                                                $this->sendUser($chat->id, 'hello '.$chat->first_name.' '.$chat->last_name);
-                                            }
+                                    $fileload = \APP_DIR . '/var/telegramcmds' . $command . '.php';
+                                    if (\file_exists($fileload)) {
+                                        $classHandler = require $fileload;
+                                        $reflect = new \ReflectionClass($classHandler);
+                                        $instance = $reflect->newInstance($this->container);
+                                        $response = $instance->run($this);
+                                        if ($chat->type=='private') {
+                                            $this->sendUser($chat->id, $response);
+                                        }
+                                    } else {
+                                        if ($chat->type=='private') {
+                                            $this->sendUser($chat->id, 'hello '.$chat->first_name.' '.$chat->last_name);
+                                        }
                                     }
                                 }
                             }

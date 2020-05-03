@@ -34,6 +34,7 @@ final class Slimlibs extends AbstractCommand {
         $this->createVarDir('/configs');
         $this->createVarDir('/jobs');
         $this->createVarDir('/schedules');
+        $this->createVarDir('/telegramcmds');
         $this->createVarDir('/log');
         $this->createVarDir('/resources');
         $this->createVarDir('/resources/config');
@@ -91,25 +92,25 @@ final class Slimlibs extends AbstractCommand {
     public function initSchedules() {
         $dir = \LIBS_DIR . '/src/Slimlibs/Command/Schedules';
         $schedules = [];
+        $iterator = new \DirectoryIterator($dir);
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isFile()) {
+                $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
+                $this->writeLine('mapping '.$tomap);
+                $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Schedules\\' . $tomap);
+                $schedules[$reflect->getConstant('MAP')] = $reflect;
+            }
+        }
+        $dir = \APP_DIR . '/src/Schedules';
         if (\is_dir($dir)) {
             $iterator = new \DirectoryIterator($dir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile()) {
                     $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                     $this->writeLine('mapping '.$tomap);
-                    $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Schedules\\' . $tomap);
+                    $reflect = new \ReflectionClass('\\App\\Schedules\\' . $tomap);
                     $schedules[$reflect->getConstant('MAP')] = $reflect;
                 }
-            }
-        }
-        $dir = \APP_DIR . '/src/Schedules';
-        $iterator = new \DirectoryIterator($dir);
-        foreach ($iterator as $fileinfo) {
-            if ($fileinfo->isFile()) {
-                $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
-                $this->writeLine('mapping '.$tomap);
-                $reflect = new \ReflectionClass('\\App\\Schedules\\' . $tomap);
-                $schedules[$reflect->getConstant('MAP')] = $reflect;
             }
         }
         $vdir = \APP_DIR . '/var/schedules';

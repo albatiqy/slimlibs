@@ -44,7 +44,7 @@ final class JobRunner extends AbstractCommand {
      *
      * @alias [remap]
      */
-    public function remap() {
+    public function remap() { //v2============
         $vdir = \APP_DIR . '/var/jobs';
         Fs::rmDir($vdir, false);
 
@@ -180,7 +180,7 @@ final class JobRunner extends AbstractCommand {
      * Memproses antrian job background
      *
      * @alias [run]
-     * @opt [$jobname|taksname|t|jobname] nama job yang akan dieksekusi
+     * @opt [$jobname|jobname|j|jobname] nama job yang akan dieksekusi
      * @arg [data|required] data berupa JSON
      */
     public function run($jobname = null) {
