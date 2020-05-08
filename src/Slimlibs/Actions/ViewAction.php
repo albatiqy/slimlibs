@@ -1,7 +1,7 @@
 <?php declare (strict_types = 1);
 namespace Albatiqy\Slimlibs\Actions;
 
-use Albatiqy\Slimlibs\Services\Configs;
+use Albatiqy\Slimlibs\Providers\Libs\Configs;
 use Psr\Container\ContainerInterface;
 
 abstract class ViewAction {
@@ -20,7 +20,7 @@ abstract class ViewAction {
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
         $this->settings = $container->get('settings');
-        $cfgfcache = $this->settings['cache']['base_dir'].'/object-da_configs.php';
+        $cfgfcache = $this->settings['cache']['base_dir'].'/object-configs.php';
         if (\file_exists($cfgfcache)) {
             $cfgcache = require $cfgfcache;
             if ((\time()-$cfgcache['expires']) < $cfgcache['generated']) {
@@ -105,7 +105,8 @@ abstract class ViewAction {
     }
 
     public static function setRendererProfile($renderer) {
-        $da = Configs::getInstance();
+        $viewdata = $renderer->getData();
+        $da = $viewdata['container']->get(Configs::class);
         $profile = $da->get('app.view.profile');
         $setting = require \APP_DIR . '/view/profiles/' . $profile . '.php';
         \define('VIEW_TEMPLATE', $profile);

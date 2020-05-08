@@ -4,7 +4,7 @@ namespace Albatiqy\Slimlibs\Command\Commands;
 use Albatiqy\Slimlibs\Command\AbstractCommand;
 use Albatiqy\Slimlibs\Support\Helper\Fs;
 use Albatiqy\Slimlibs\Support\Util\DocBlock;
-use Albatiqy\Slimlibs\Services\Actions;
+use Albatiqy\Slimlibs\Providers\Libs\Actions;
 use Albatiqy\Slimlibs\Support\Helper\CodeOut;
 
 /**
@@ -76,7 +76,7 @@ final class Slimlibs extends AbstractCommand {
                 $actions[$class->getName()] = $this->parseAuthNotation($class);
             }
         }
-        $da_actions = Actions::getInstance();
+        $da_actions = $this->container->get(Actions::class);
         if ($da_actions->rebuild($actions)) {
             $this->success("TRANSACTION SUCCESS");
         } else {
@@ -101,14 +101,14 @@ final class Slimlibs extends AbstractCommand {
                 $schedules[$reflect->getConstant('MAP')] = $reflect;
             }
         }
-        $dir = \APP_DIR . '/src/Schedules';
+        $dir = \APP_DIR . '/src/Command/Schedules';
         if (\is_dir($dir)) {
             $iterator = new \DirectoryIterator($dir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile()) {
                     $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                     $this->writeLine('mapping '.$tomap);
-                    $reflect = new \ReflectionClass('\\App\\Schedules\\' . $tomap);
+                    $reflect = new \ReflectionClass('\\App\\Command\\Schedules\\' . $tomap);
                     $schedules[$reflect->getConstant('MAP')] = $reflect;
                 }
             }

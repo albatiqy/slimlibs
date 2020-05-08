@@ -15,7 +15,7 @@ use Albatiqy\Slimlibs\Support\Util\DocBlock;
 final class CommandMapper extends AbstractCommand {
 
     public function main() { // validation
-        $reflect = new \ReflectionClass('\\App\\Commands\\' . $this->args[1]);
+        $reflect = new \ReflectionClass('\\App\\Command\\Commands\\' . $this->args[1]);
         $result = $this->parseClass($reflect);
         $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
         \file_put_contents(\APP_DIR . '/var/commands/' . $this->args[0] . '.php', $fileout);

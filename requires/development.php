@@ -2,7 +2,7 @@
 
 return [
     'cache'=>[
-        'pages' => true,
+        'pages' => false,
         'routes' => false
     ],
     'error_handler_middleware' => [

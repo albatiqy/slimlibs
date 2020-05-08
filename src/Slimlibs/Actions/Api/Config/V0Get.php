@@ -7,7 +7,7 @@ use Albatiqy\Slimlibs\Result\Results\Data;
 use Albatiqy\Slimlibs\Result\Results\Table;
 use Albatiqy\Slimlibs\Services\Configs;
 
-final class V0Get extends ResultAction {
+final class V0Get extends ResultAction { // perbaiki
 
     protected function getResult(array $data, array $args) {
         try {

@@ -3,7 +3,7 @@ namespace Albatiqy\Slimlibs\Command\Commands;
 
 use Albatiqy\Slimlibs\Command\AbstractCommand;
 use Albatiqy\Slimlibs\Command\TableFormatter;
-use Albatiqy\Slimlibs\Services\Jobs;
+use Albatiqy\Slimlibs\Providers\Libs\Jobs;
 use Albatiqy\Slimlibs\Support\Helper\CodeOut;
 use Albatiqy\Slimlibs\Support\Util\DocBlock;
 use Albatiqy\Slimlibs\Support\Helper\Fs;
@@ -61,13 +61,13 @@ final class JobRunner extends AbstractCommand {
                 \file_put_contents($vdir . '/' . $reflect->getConstant('MAP') . '.php', $fileout);
             }
         }
-        $dir = \APP_DIR . '/src/Jobs';
+        $dir = \APP_DIR . '/src/Command/Jobs';
         $iterator = new \DirectoryIterator($dir);
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isFile()) {
                 $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                 $this->writeLine('mapping '. $tomap);
-                $reflect = new \ReflectionClass('\\App\\Jobs\\' . $tomap);
+                $reflect = new \ReflectionClass('\\App\\Command\\Jobs\\' . $tomap);
                 // check parent here
                 $result = $this->parseClass($reflect);
                 $fileout = "<?php\nreturn [\n    \"handler\" => " . $reflect->getName() . "::class,\n    \"options\" => " . CodeOut::fromArray($result) . "\n];";
@@ -130,15 +130,12 @@ final class JobRunner extends AbstractCommand {
         }
 
         if ($time%60==0) {
-            $da_jobs = Jobs::getInstance();
+            $da_jobs = $this->container->get(Jobs::class);
             $jobs = $da_jobs->remains();
             foreach ($jobs as $job) {
                 $fileload = \APP_DIR . '/var/jobs/' . $job->job . '.php';
                 if (!\file_exists($fileload)) {
-                    $da_jobs->dbUpdate([
-                        'logs' => 'job tidak ditemukan',
-                        'id' => $job->id
-                    ]);
+                    $da_jobs->setResult($job->id, Jobs::STATE_ERROR, 'job tidak ditemukan');
                 } else {
                     $cmdmanifest = require $fileload;
                     $reflect = $cmdmanifest['handler'];
@@ -158,18 +155,9 @@ final class JobRunner extends AbstractCommand {
                         $output = $instance->getOutput();
                         $logs = $instance->getLogs();
                         //$da_jobs->flagFinished($job->id);
-                        $da_jobs->dbUpdate([
-                            'logs' => \substr($logs,0,1000),
-                            'output' => \substr($output,0,2000),
-                            'state' => ($result===true?1:0),
-                            'id' => $job->id
-                        ]);
+                        $da_jobs->setResult($job->id, ($result===true?Jobs::STATE_FINISHED:Jobs::STATE_RESET), \substr($logs,0,1000), \substr($output,0,2000));
                     } catch (\Exception $e) {
-                        $da_jobs->dbUpdate([
-                            'logs' => \substr($e->getMessage()."\r\n".$logs,0,1000),
-                            'output' => \substr($output,0,2000),
-                            'id' => $job->id
-                        ]);
+                        $da_jobs->setResult($job->id, Jobs::STATE_ERROR, \substr($e->getMessage()."\r\n".$logs,0,1000), \substr($output,0,2000));
                     }
                 }
             }

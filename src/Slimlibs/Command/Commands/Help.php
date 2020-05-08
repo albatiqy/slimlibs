@@ -27,11 +27,11 @@ final class Help extends AbstractCommand {
         //strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         $tf = new TableFormatter();
         $this->writeLine("available class:\n");
-        $dir = \APP_DIR . '/src/Commands';
+        $dir = \APP_DIR . '/src/Command/Commands';
         $iterator = new \DirectoryIterator($dir);
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isFile()) {
-                $class = new \ReflectionClass('\\App\\Commands\\' . $fileinfo->getBasename('.' . $fileinfo->getExtension()));
+                $class = new \ReflectionClass('\\App\\Command\\Commands\\' . $fileinfo->getBasename('.' . $fileinfo->getExtension()));
                 $doc_block = new DocBlock($class);
                 echo $tf->format(
                     ['20%', '*'],

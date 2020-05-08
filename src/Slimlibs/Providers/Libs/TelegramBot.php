@@ -6,6 +6,9 @@ use Albatiqy\Slimlibs\Support\Helper\CodeOut;
 
 final class TelegramBot {
 
+    public const STATE_FINISHED = 1;
+    public const STATE_ERROR = 2;
+
     private $container;
     private $token;
     private $channelName;
@@ -15,7 +18,7 @@ final class TelegramBot {
 
     public function __construct(ContainerInterface $container) {
         $settings = $container->get('settings');
-        $this->db = $container->get('db')();
+        $this->db = $container->get('db')(); // pindahkan ke yang lain
         $fcache = $settings['cache']['base_dir'] . "/telegram-users.php";
         if (\file_exists($fcache)) {
             $expires = (\filemtime($fcache) + (60*60*5));
@@ -215,7 +218,7 @@ final class TelegramBot {
     }
 
     public function messageChannel($text) {
-        $sql = "INSERT INTO sys_telegram_chqueue (`type`,`text`,`state`) VALUES (:type,:text,0)";
+        $sql = "INSERT INTO sys_telegram_chqueue (`type`,`text`,state) VALUES (:type,:text,0)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':type' => 0,
@@ -226,7 +229,7 @@ final class TelegramBot {
     public function messageUser($username, $text) {
         $chat_id = $this->findIdByUsername($username);
         if ($chat_id) {
-            $sql = "INSERT INTO sys_telegram_uqueue (chat_id,`type`,`text`,`state`) VALUES (:chat_id,:type,:text,0)";
+            $sql = "INSERT INTO sys_telegram_uqueue (chat_id,`type`,`text`,state) VALUES (:chat_id,:type,:text,0)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':chat_id' => $chat_id,
@@ -274,20 +277,22 @@ final class TelegramBot {
 
     private function setChannelMessageError($id, $logs) {
         $stmt = $this->db->prepare(
-            'UPDATE sys_telegram_chqueue SET logs=:logs,state=2 WHERE id=:id'
+            'UPDATE sys_telegram_chqueue SET logs=:logs,state=:state WHERE id=:id'
         );
         $stmt->execute([
             ':logs' => $logs,
+            ':state' => self::STATE_ERROR,
             ':id' => $id
         ]);
     }
 
     private function setUserMessageError($id, $logs) {
         $stmt = $this->db->prepare(
-            'UPDATE sys_telegram_uqueue SET logs=:logs,state=2 WHERE id=:id'
+            'UPDATE sys_telegram_uqueue SET logs=:logs,state=:state WHERE id=:id'
         );
         $stmt->execute([
             ':logs' => $logs,
+            ':state' => self::STATE_ERROR,
             ':id' => $id
         ]);
     }

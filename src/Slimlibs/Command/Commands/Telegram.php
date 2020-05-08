@@ -29,14 +29,14 @@ final class Telegram extends AbstractCommand {
                 $commands[$reflect->getConstant('MAP')] = $reflect;
             }
         }
-        $dir = \APP_DIR . '/src/TelegramCommands';
+        $dir = \APP_DIR . '/src/Command/TelegramCommands';
         if (\is_dir($dir)) {
             $iterator = new \DirectoryIterator($dir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile()) {
                     $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                     $this->writeLine('mapping '.$tomap);
-                    $reflect = new \ReflectionClass('\\App\\TelegramCommands\\' . $tomap);
+                    $reflect = new \ReflectionClass('\\App\\Command\\TelegramCommands\\' . $tomap);
                     $commands[$reflect->getConstant('MAP')] = $reflect;
                 }
             }

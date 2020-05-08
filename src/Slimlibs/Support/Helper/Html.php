@@ -37,7 +37,7 @@ final class Html {
         $dom->loadHTML($html);
         \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//figure[@class="media"]');
+        $figures = $xpath->query('//figure[@class="media"]'); // no ckeditor perbaiki!!!!!!!!!!!!!!!!!!!
         foreach ($figures as $figure) {
             $oembeds = $figure->getElementsByTagName('oembed'); // firstChild
             $url = $oembeds->item(0)->getAttribute('url');
@@ -54,40 +54,5 @@ final class Html {
             return false;
         }
         return $images;
-    }
-
-    public static function processMediaEmbed($html) {
-        if (!$html) {
-            return '';
-        }
-        $MediaEmbed = new \MediaEmbed\MediaEmbed();
-        $dom = new \DOMDocument();
-        \libxml_use_internal_errors(true);
-        $dom->loadHTML($html);
-        \libxml_use_internal_errors(false);
-        $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//figure[@class="media"]');
-        foreach ($figures as $figure) {
-            $oembeds = $figure->getElementsByTagName('oembed'); // firstChild
-            $url = $oembeds->item(0)->getAttribute('url');
-            $MediaObject = $MediaEmbed->parseUrl($url);
-            if ($MediaObject) {
-                $MediaObject->setAttribute([
-                    'class' => 'xapp-'.$MediaObject->slug().'-media'
-                ]);
-                $htmlEmbed = $MediaObject->getEmbedCode();
-                $mediaDoc = new \DOMDocument();
-                \libxml_use_internal_errors(true);
-                $mediaDoc->loadHTML($htmlEmbed);
-                \libxml_use_internal_errors(false);
-                $figure->parentNode->replaceChild($dom->importNode($mediaDoc->getElementsByTagName('body')->item(0)->childNodes[0],true), $figure);
-            }
-        }
-        $mock = new \DOMDocument();
-        $body = $dom->getElementsByTagName('body')->item(0);
-        foreach ($body->childNodes as $child){
-            $mock->appendChild($mock->importNode($child, true));
-        }
-        return $mock->saveHTML();
     }
 }

@@ -6,7 +6,7 @@ use Albatiqy\Slimlibs\Providers\Validation\ValidationException;
 use Albatiqy\Slimlibs\Result\Results\Data;
 use Albatiqy\Slimlibs\Services\Configs;
 
-final class V0Put extends ResultAction {
+final class V0Put extends ResultAction { // perbaiki
 
     protected function getResult(array $data, array $args) {
         try {
