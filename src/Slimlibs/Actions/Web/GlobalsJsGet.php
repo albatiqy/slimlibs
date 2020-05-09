@@ -7,7 +7,7 @@ final class GlobalsJsGet extends ViewAction {
 
     protected function getResponse(array $args) {
         $params = $this->request->getQueryParams();
-        $module = $params['module'] ?? null;
+        $module = isset($params['module']);
         $this->data['settings'] = $this->container->get('settings');
         $this->data['module'] = $module;
         $this->response = $this->response->withHeader('Content-Type', 'text/javascript');
