@@ -1,6 +1,7 @@
 <?php declare (strict_types = 1);
-namespace Albatiqy\Slimlibs\Support\ApiClient;
+namespace Albatiqy\Slimlibs\Providers\Libs\ApiClient;
 
+use Psr\Container\ContainerInterface;
 use Albatiqy\Slimlibs\Result\AbstractResult;
 use Albatiqy\Slimlibs\Result\ResultException;
 
@@ -9,8 +10,10 @@ class ApiCall {
     private $token;
     private $base_url;
     private $password;
+    private $container;
 
-    public function __construct($base_url, $email = '', $password = '') {
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
         $this->base_url = $base_url . '/api/v0';
     }
 

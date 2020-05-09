@@ -7,8 +7,8 @@ use Albatiqy\Slimlibs\Middleware\Jwt;
 return static function (App $app) use ($settings) {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->group('/v0', function (RouteCollectorProxy $group) {
-            $group->post('/login', Albatiqy\Slimlibs\Actions\Api\Login0Post::class); // <== jgn di jwt
-            $group->post('/token', Albatiqy\Slimlibs\Actions\Api\Token0Post::class); // <== jgn di jwt
+            $group->post('/users/login', Albatiqy\Slimlibs\Actions\Api\Login0Post::class); // <== jgn di jwt
+            $group->post('/users/token', Albatiqy\Slimlibs\Actions\Api\Token0Post::class); // <== jgn di jwt
             $group->group('/sys', function (RouteCollectorProxy $group) {
                 $group->group('/configs', function (RouteCollectorProxy $group) {
                     $group->get('', Albatiqy\Slimlibs\Actions\Api\Config\V0Get::class);
