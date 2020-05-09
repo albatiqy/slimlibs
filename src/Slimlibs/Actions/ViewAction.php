@@ -118,6 +118,36 @@ abstract class ViewAction {
         return $profile;
     }
 
+    protected function cacheIdSave($module, $key) {
+        $fdir = \APP_DIR.'/var/resources/routecache/'.$module;
+        if (!\is_dir($fdir)) {
+            \umask(2);
+            \mkdir($fdir, 0777, true);
+        }
+        $pathuri = \substr($this->request->getUri()->getPath(), \strlen(\BASE_PATH));
+        \file_put_contents($fdir.'/'.$key, $pathuri, \FILE_APPEND);
+    }
+
+    public static function cachePageRemove($module, $key) {
+        $fnremove = function($fcache) {
+            if (\file_exists($fcache)) {
+                $caches = \file($fcache);
+                foreach ($caches as $cachepage) {
+                    $pagecache = \APP_DIR.'/var/cache/pages'.$cachepage.'.php';
+                    if (\file_exists($pagecache)) {
+                        \unlink($pagecache);
+                    }
+                }
+                \unlink($fcache);
+            }
+        };
+        $fdir = \APP_DIR.'/var/resources/routecache/'.$module;
+        $glob = \glob($fdir.'/'.$key);
+        foreach ($glob as $file) {
+            $fnremove($fdir.'/'.$file);
+        }
+    }
+
     protected function redirect($path = null) {
         if ($path == null) {
             $path = \BASE_PATH . '/';

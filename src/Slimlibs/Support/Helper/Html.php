@@ -37,10 +37,9 @@ final class Html {
         $dom->loadHTML($html);
         \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//figure[@class="media"]'); // no ckeditor perbaiki!!!!!!!!!!!!!!!!!!!
+        $figures = $xpath->query('//iframe[not(@class)]'); // no ckeditor perbaiki!!!!!!!!!!!!!!!!!!!
         foreach ($figures as $figure) {
-            $oembeds = $figure->getElementsByTagName('oembed'); // firstChild
-            $url = $oembeds->item(0)->getAttribute('url');
+            $url = $figure->getAttribute('src');
             $MediaObject = $MediaEmbed->parseUrl($url);
             if ($MediaObject) {
                 $imageSrc = $MediaObject->getImageSrc();

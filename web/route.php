@@ -11,11 +11,9 @@ return static function (App $app) use ($settings) {
             $group->post('/users/token', Albatiqy\Slimlibs\Actions\Api\Token0Post::class); // <== jgn di jwt
             $group->group('/sys', function (RouteCollectorProxy $group) {
                 $group->group('/configs', function (RouteCollectorProxy $group) {
-                    $group->get('', Albatiqy\Slimlibs\Actions\Api\Config\V0Get::class);
-                    $group->post('', Albatiqy\Slimlibs\Actions\Api\Config\V0Post::class);
-                    $group->group('/{id}', function (RouteCollectorProxy $group) {
+                    $group->put('', Albatiqy\Slimlibs\Actions\Api\Config\V0Put::class);
+                    $group->group('/{key}', function (RouteCollectorProxy $group) {
                         $group->get('', Albatiqy\Slimlibs\Actions\Api\Config\V0Get::class);
-                        $group->put('', Albatiqy\Slimlibs\Actions\Api\Config\V0Put::class);
                         $group->delete('', Albatiqy\Slimlibs\Actions\Api\Config\V0Delete::class);
                     });
                 });

@@ -48,7 +48,7 @@ final class Configs implements UseObjectCacheInterface {
         $db = $this->db();
         $sql = "DELETE FROM sys_configs WHERE k=:k";
         $stmt = $db->prepare($sql);
-        $stmt->execute([
+        return $stmt->execute([
             ':k' => $key
         ]);
     }

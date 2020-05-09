@@ -4,20 +4,14 @@ namespace Albatiqy\Slimlibs\Actions\Api\Config;
 use Albatiqy\Slimlibs\Actions\ResultAction;
 use Albatiqy\Slimlibs\Providers\Database\DbServiceException;
 use Albatiqy\Slimlibs\Result\Results\Data;
-use Albatiqy\Slimlibs\Result\Results\Table;
-use Albatiqy\Slimlibs\Services\Configs;
+use Albatiqy\Slimlibs\Providers\Libs\Configs;
 
 final class V0Get extends ResultAction { // perbaiki
 
     protected function getResult(array $data, array $args) {
         try {
-            $da = Configs::getInstance();
-            if (isset($args['id'])) {
-                return new Data($da->getById($args['id']));
-            } else {
-                $query = $da->findAll($data);
-                return new Table($query->data, $query->recordsFiltered, $query->recordsTotal);
-            }
+            $da = $this->container->get(Configs::class);
+            return new Data([$args['key'] => $da->get($args['key'])]);
         } catch (DbServiceException $dbe) {
             if ($dbe->getCode() == DbServiceException::E_NO_RESULT) {
                 $this->sendNotExist();
