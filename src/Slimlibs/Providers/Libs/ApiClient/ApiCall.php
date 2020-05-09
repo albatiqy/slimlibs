@@ -8,20 +8,28 @@ use Albatiqy\Slimlibs\Result\ResultException;
 class ApiCall {
 
     private $token;
-    private $base_url;
+    private $base_url = null;
+    private $base_endpoint;
     private $password;
     private $container;
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
+        $this->base_endpoint = '/api/v0';
     }
 
-    public function setBaseUrl($baseUrl) {
-        $this->base_url = $base_url . '/api/v0';
+    public function setBaseUrl($baseUrl, $baseEndPoint = null) {
+        if ($baseEndPoint!=null) {
+            $this->base_endpoint = $baseEndPoint;
+        }
+        $this->base_url = $baseUrl . $this->base_endpoint;
         return $this;
     }
 
     public function post($endPoint, $data) {
+        if ($this->base_url==null) {
+            throw new \Exception('no base url api call');
+        }
         $data_string = \json_encode($data);
         $ch = \curl_init($this->base_url . $endPoint);
         \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
