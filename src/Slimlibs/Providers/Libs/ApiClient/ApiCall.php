@@ -14,7 +14,11 @@ class ApiCall {
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
+    }
+
+    public function setBaseUrl($baseUrl) {
         $this->base_url = $base_url . '/api/v0';
+        return $this;
     }
 
     public function post($endPoint, $data) {

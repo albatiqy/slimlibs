@@ -20,7 +20,7 @@ final class Login0Post extends ResultAction {
         } catch (AuthException $ae) {
             $this->sendNotAuthorized($ae->getMessage());
         } catch (\Exception $e) {
-            $this->sendNotAuthorized($e->getMessage());
+            $this->sendServiceError($e->getMessage());
         }
 
         $jwt = $this->jwt;

@@ -5,9 +5,9 @@ use Albatiqy\Slimlibs\Result\ResultException;
 
 class ServiceException extends ResultException {
 
-    const CODE = 400;
+    const CODE = 500;
     const MESSAGE = 'Service Exception';
-    const TITLE = '400 Service Exception';
+    const TITLE = '500 Service Exception';
     const DESCRIPTION = '';
 
 
