@@ -1,21 +1,3 @@
-const globals = {
-    basePath: '<?=BASE_PATH?>',
-    backendPath: '<?=$settings['backend_path']?>',
-    resTypes: {<?php
-$type = [];
-foreach (Albatiqy\Slimlibs\Result\AbstractResult::RES_TYPES as $i=>$v) {
-    $type[] = $i.':'.$v;
-}
-echo implode(', ', $type);
-?>},
-    errTypes: {<?php
-$type = [];
-foreach (Albatiqy\Slimlibs\Result\ResultException::ERR_TYPES as $i=>$v) {
-    $type[] = $i.':'.$v;
-}
-echo implode(', ', $type);
-?>}
-}
 class ResultException extends Error {
     constructor(response, status) {
         super(response.message)
@@ -48,6 +30,24 @@ class JSONError extends Error {
         this.httpStatus = status
     }
 }
+const globals = {
+    basePath: '<?=BASE_PATH?>',
+    backendPath: '<?=$settings['backend_path']?>',
+    resTypes: {<?php
+$type = [];
+foreach (Albatiqy\Slimlibs\Result\AbstractResult::RES_TYPES as $i=>$v) {
+    $type[] = $i.':'.$v;
+}
+echo implode(', ', $type);
+?>},
+    errTypes: {<?php
+$type = [];
+foreach (Albatiqy\Slimlibs\Result\ResultException::ERR_TYPES as $i=>$v) {
+    $type[] = $i.':'.$v;
+}
+echo implode(', ', $type);
+?>}
+},
 SlimlibsHandleHttpJSONResponse = async function(response) { // text status???
     if (['application/json', 'text/json'].includes(response.headers.get('Content-Type'))) {
         let json = null
