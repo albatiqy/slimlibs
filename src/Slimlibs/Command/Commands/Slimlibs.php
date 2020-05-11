@@ -60,6 +60,26 @@ final class Slimlibs extends AbstractCommand {
      * @alias [initauth]
      */
     public function initAuth() {
+        $app = \Slim\Factory\AppFactory::create();
+        $routeCollector = $app->getRouteCollector();
+        $dsettings = $this->container->get('settings');
+        $settings = ['backend_path' => $dsettings['backend_path']];
+        (require \LIBS_DIR . '/web/route.php')($app);
+        $routes = $routeCollector->getRoutes();
+        $actions = [];
+        foreach ($routes as $route) {
+            $callable = $route->getCallable();
+            $class = new \ReflectionClass('\\'.$callable);
+            $action = ['route_id' => $route->getIdentifier(), 'method' => $route->getMethods()[0], 'class' => $callable, 'auth' => $this->parseAuthNotation($class)];
+            $actions[] = (object) $action;
+        }
+        $da_actions = $this->container->get(Actions::class);
+        if ($da_actions->rebuild($actions)) {
+            $this->success("TRANSACTION SUCCESS");
+        } else {
+            $this->error("TRANSACTION ERROR");
+        }
+        /*
         $dir = \APP_DIR . '/src/Actions';
         $cpos = \strlen($dir);
 
@@ -82,6 +102,7 @@ final class Slimlibs extends AbstractCommand {
         } else {
             $this->error("TRANSACTION ERROR");
         }
+        */
     }
 
     /**

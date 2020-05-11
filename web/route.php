@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use Slim\App;
+use Slim\App as SlimApp;
 use Slim\Routing\RouteCollectorProxy;
 use Albatiqy\Slimlibs\Middleware\Jwt;
 
-return static function (App $app) use ($settings) {
+return static function (SlimApp $app) use ($settings) {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->group('/v0', function (RouteCollectorProxy $group) {
             $group->post('/users/login', Albatiqy\Slimlibs\Actions\Api\Login0Post::class); // <== jgn di jwt
@@ -22,6 +22,7 @@ return static function (App $app) use ($settings) {
         require APP_DIR.'/routes/api.php';
     });
     $app->get('/js/modules/globals.js', Albatiqy\Slimlibs\Actions\Web\GlobalsJsGet::class); // create api global json
-    $app->get('/login', \App\Actions\Web\LoginGet::class);
+    $app->get('/login', App\Actions\Web\LoginGet::class);
+    $app->get('/mlogin', App\Actions\Web\Modules\LoginGet::class);
     require APP_DIR.'/routes/main.php';
 };

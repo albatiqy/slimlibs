@@ -6,7 +6,7 @@ use Albatiqy\Slimlibs\Providers\Database\DbServiceException;
 use Albatiqy\Slimlibs\Result\Results\Data;
 use Albatiqy\Slimlibs\Providers\Libs\Configs;
 
-final class V0Get extends ResultAction { // perbaiki
+final class V0Get extends ResultAction {
 
     protected function getResult(array $data, array $args) {
         try {

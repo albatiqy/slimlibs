@@ -6,7 +6,7 @@ use Albatiqy\Slimlibs\Providers\Database\DbServiceException;
 use Albatiqy\Slimlibs\Result\Results\None;
 use Albatiqy\Slimlibs\Providers\Libs\Configs;
 
-final class V0Delete extends ResultAction { // perbaiki
+final class V0Delete extends ResultAction {
 
     protected function getResult(array $data, array $args) {
         try {

@@ -30,9 +30,14 @@ class ErrorHandler extends SlimErrorHandler {
                 $accepts = \explode(',', $this->request->getHeader('Accept')[0]);
                 if (\count($accepts) > 1) {
                     if ($this->exception->getCode() == 401) {
+                        $callable = $this->request->getAttribute('__route__')->getCallable();
                         $uri = $this->request->getUri();
+                        $loginuri = '/login?return=' . \urlencode($uri->getPath());
+                        if (\strpos($callable, 'App\\Actions\\Web\Modules')===0) {
+                            $loginuri = '/mlogin?return=' . \urlencode($uri->getPath());
+                        }
                         $response = $this->responseFactory->createResponse(302);
-                        return $response->withHeader('Location', \BASE_PATH . '/login?return=' . \urlencode($uri->getPath()));
+                        return $response->withHeader('Location', \BASE_PATH . $loginuri);
                     }
                 }
             }

@@ -1,7 +1,7 @@
 <?php declare (strict_types = 1);
 namespace Albatiqy\Slimlibs\Support\Helper;
 
-final class Html {
+final class Html { // suggest mediaembed
 
     public static function getImagesSrc($html, $first=false) {
         if (!$html) {
@@ -37,7 +37,7 @@ final class Html {
         $dom->loadHTML($html);
         \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//iframe[not(@class)]'); // no ckeditor perbaiki!!!!!!!!!!!!!!!!!!!
+        $figures = $xpath->query('//iframe[not(@class)]');
         foreach ($figures as $figure) {
             $url = $figure->getAttribute('src');
             $MediaObject = $MediaEmbed->parseUrl($url);

@@ -24,10 +24,10 @@ final class Actions {
         try {
             $db->beginTransaction();
             $affected = $db->exec("TRUNCATE TABLE sys_actions");
-            $sql = "INSERT INTO sys_actions (class, block) VALUES (:class, :block)";
+            $sql = "INSERT INTO sys_actions (route_id, method, class, auth) VALUES (:route_id, :method, :class, :auth)";
             $stmt = $db->prepare($sql);
-            foreach ($actions as $action=>$block) {
-                $stmt->execute([':class' => $action, ':block' => $block]);
+            foreach ($actions as $action) {
+                $stmt->execute([':route_id' => $action->route_id, ':method' => $action->method, ':class' => $action->class, ':auth' => $action->auth]);
             }
             $db->commit();
             return true;
