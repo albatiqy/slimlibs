@@ -31,8 +31,9 @@ class ErrorHandler extends SlimErrorHandler {
                 if (\count($accepts) > 1) {
                     if ($this->exception->getCode() == 401) {
                         $callable = $this->request->getAttribute('__route__')->getCallable();
+                        $settings = $this->container->get('settings');
                         $uri = $this->request->getUri();
-                        $loginuri = '/login?return=' . \urlencode($uri->getPath());
+                        $loginuri = $settings['login_path'].'?return=' . \urlencode($uri->getPath());
                         if (\strpos($callable, 'App\\Actions\\Web\Modules')===0) {
                             $loginuri = '/mlogin?return=' . \urlencode($uri->getPath());
                         }

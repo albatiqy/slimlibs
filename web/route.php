@@ -22,7 +22,7 @@ return static function (SlimApp $app) use ($settings) {
         require APP_DIR.'/routes/api.php';
     });
     $app->get('/js/modules/globals.js', Albatiqy\Slimlibs\Actions\Web\GlobalsJsGet::class); // create api global json
-    $app->get('/login', App\Actions\Web\LoginGet::class);
+    $app->get($settings['login_path'], App\Actions\Web\LoginGet::class);
     $app->get('/mlogin', App\Actions\Web\Modules\LoginGet::class);
     require APP_DIR.'/routes/main.php';
 };

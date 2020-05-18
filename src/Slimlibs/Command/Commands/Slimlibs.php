@@ -63,7 +63,10 @@ final class Slimlibs extends AbstractCommand {
         $app = \Slim\Factory\AppFactory::create();
         $routeCollector = $app->getRouteCollector();
         $dsettings = $this->container->get('settings');
-        $settings = ['backend_path' => $dsettings['backend_path']];
+        $settings = [
+            'backend_path' => $dsettings['backend_path'],
+            'login_path' => $dsettings['login_path']
+        ];
         (require \LIBS_DIR . '/web/route.php')($app);
         $routes = $routeCollector->getRoutes();
         $actions = [];
