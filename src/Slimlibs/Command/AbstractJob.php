@@ -6,8 +6,8 @@ use Closure;
 abstract class AbstractJob {
 
     private $log = '';
-    private $output = '';
     private $lockFile = '';
+    protected $output = '';
 
     protected const MAP = 'undefined';
 
@@ -29,6 +29,10 @@ abstract class AbstractJob {
         $this->log .= "\r\n\r\n".$msg;
     }
 
+    protected function output($msg) {
+        $this->output .= $msg."\r\n";
+    }
+
     public function getLogs() {
         return $this->log;
     }
@@ -42,7 +46,6 @@ abstract class AbstractJob {
         if (!$console) {
             throw new \Exception('job harus dijalankan dalam mode cli');
         }
-        \ob_start();
         $result = false;
         try {
             $result = $this->handle();
@@ -52,8 +55,6 @@ abstract class AbstractJob {
             }
             throw $e;
         }
-        $this->output = \ob_get_contents();
-        \ob_end_clean();
         return $result;
     }
 

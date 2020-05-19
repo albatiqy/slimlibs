@@ -155,7 +155,7 @@ final class JobRunner extends AbstractCommand {
                         $output = $instance->getOutput();
                         $logs = $instance->getLogs();
                         //$da_jobs->flagFinished($job->id);
-                        $da_jobs->setResult($job->id, ($result===true?Jobs::STATE_FINISHED:Jobs::STATE_RESET), \substr($logs,0,1000), \substr($output,0,2000));
+                        $da_jobs->setResult($job->id, ($result===true?Jobs::STATE_FINISHED:($result===false?Jobs::STATE_ERROR:Jobs::STATE_RESET)), \substr($logs,0,1000), \substr($output,0,2000));
                     } catch (\Exception $e) {
                         $da_jobs->setResult($job->id, Jobs::STATE_ERROR, \substr($e->getMessage()."\r\n".$logs,0,1000), \substr($output,0,2000));
                     }
