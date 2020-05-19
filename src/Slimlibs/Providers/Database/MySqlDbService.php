@@ -427,6 +427,12 @@ abstract class MySqlDbService extends DbService {
         }
          */
         }
+
+        //=====================================
+        //print_r($bindings);
+        //$stmt->debugDumpParams();
+        //=====================================
+
         $stmt->execute();
         return $stmt->fetchAll();
     }

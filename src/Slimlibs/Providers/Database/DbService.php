@@ -108,4 +108,8 @@ abstract class DbService {
     protected function throwPDOException($exception) {
         throw new DbServiceException($exception->getMessage(), DbServiceException::E_PDO, $exception);
     }
+
+    protected function throwClientError() {
+        throw new DbServiceException("request error", DbServiceException::E_CLIENT);
+    }
 }
