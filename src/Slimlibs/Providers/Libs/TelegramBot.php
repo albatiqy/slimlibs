@@ -276,14 +276,23 @@ final class TelegramBot {
                             foreach ($entities as $entity) {
                                 if ($entity->type=='bot_command') {
                                     $command = \substr($message->text, $entity->offset, $entity->length);
-                                    $subcmdc = \explode(':', $command);
-                                    $fileload = \APP_DIR . '/var/telegramcmds' . $subcmdc[0] . '.php';
+                                    $subcmd = null;
+                                    $scmdo = $entity->offset+$entity->length;
+                                    if (\strlen($message->text)>$scmdo) {
+                                        $subcmdc = \substr($message->text, $scmdo+1);
+                                        $subcmdc = \substr($subcmdc, 0, \strpos($subcmdc,' '));
+                                        if (\substr($subcmdc, 0, 1)==':') {
+                                            $subcmd = \strpos($subcmdc, 1);
+                                        }
+                                    }
+                                    $fileload = \APP_DIR . '/var/telegramcmds' . $command . '.php';
                                     if (\file_exists($fileload)) {
                                         $cmdmanifest = require $fileload;
                                         $reflect = new \ReflectionClass($cmdmanifest['handler']);
                                         $instance = $reflect->newInstance($this->container);
-                                        if (\count($subcmdc)>1) {
-                                            $cmd = $cmdmanifest['options']['commands'][$subcmdc[1]]??null;
+
+                                        if ($subcmd!=null) {
+                                            $cmd = $cmdmanifest['options']['commands'][$subcmd]??null;
                                             if (\is_array($cmd)) {
                                                 $cmd = $cmd['name'];
                                             } else {
