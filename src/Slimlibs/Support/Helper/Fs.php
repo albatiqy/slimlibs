@@ -108,4 +108,25 @@ final class Fs {
             $callback($item->getRealPath());
         }
     }
+
+    public static function directorySize($dir)
+    {
+        $size = 0;
+        foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS)) as $file => $key) {
+            if ($key->isFile()) {
+                $size += $key->getSize();
+            }
+        }
+        return $size;
+    }
+
+    public static function directoryContents($dir)
+    {
+        $contents = array();
+        foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS)) as $pathname => $fi) {
+            $contents[] = $pathname;
+        }
+        \natsort($contents);
+        return $contents;
+    }
 }

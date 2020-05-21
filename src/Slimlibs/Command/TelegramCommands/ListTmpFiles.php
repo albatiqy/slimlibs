@@ -9,7 +9,16 @@ final class ListTmpFiles extends AbstractTelegramCommand {
 
     public function run($message, $bot) {
         if ($message->chat->type=='private') {
-            $bot->sendUser($message->chat->id, 'mbelgedes');
+            $bot->sendUserText($message->chat->id, 'mbelgedes');
         }
+    }
+
+    /**
+     * destination png file
+     *
+     * @map [destpng]
+     */
+    public function oke($message, $bot) {
+
     }
 }

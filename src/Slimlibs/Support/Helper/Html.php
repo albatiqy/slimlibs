@@ -54,4 +54,52 @@ final class Html { // suggest mediaembed
         }
         return $images;
     }
+
+    public static function entities($string, $preserve_encoded_entities = false)
+    {
+        if ($preserve_encoded_entities) {
+            // @codeCoverageIgnoreStart
+            if (\defined('HHVM_VERSION')) {
+                $translation_table = \get_html_translation_table(\HTML_ENTITIES, \ENT_QUOTES);
+            } else {
+                $translation_table = \get_html_translation_table(\HTML_ENTITIES, \ENT_QUOTES, self::mbInternalEncoding());
+            }
+            // @codeCoverageIgnoreEnd
+
+            $translation_table[\chr(38)] = '&';
+            return \preg_replace('/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/', '&amp;', \strtr($string, $translation_table));
+        }
+
+        return \htmlentities($string, \ENT_QUOTES, self::mbInternalEncoding());
+    }
+
+    public static function linkify($text)
+    {
+        $text = \preg_replace('/&apos;/', '&#39;', $text); // IE does not handle &apos; entity!
+        $section_html_pattern = '%# Rev:20100913_0900 github.com/jmrware/LinkifyURL
+            # Section text into HTML <A> tags  and everything else.
+              (                             # $1: Everything not HTML <A> tag.
+                [^<]+(?:(?!<a\b)<[^<]*)*     # non A tag stuff starting with non-"<".
+              |      (?:(?!<a\b)<[^<]*)+     # non A tag stuff starting with "<".
+             )                              # End $1.
+            | (                             # $2: HTML <A...>...</A> tag.
+                <a\b[^>]*>                   # <A...> opening tag.
+                [^<]*(?:(?!</a\b)<[^<]*)*    # A tag contents.
+                </a\s*>                      # </A> closing tag.
+             )                              # End $2:
+            %ix';
+
+        return \preg_replace_callback($section_html_pattern, array(__CLASS__, 'linkifyCallback'), $text);
+    }
+
+    protected static function mbInternalEncoding($encoding = null)
+    {
+        if (\function_exists('mb_internal_encoding')) {
+            return $encoding ? \mb_internal_encoding($encoding) : \mb_internal_encoding();
+        }
+
+        // @codeCoverageIgnoreStart
+        return 'UTF-8';
+        // @codeCoverageIgnoreEnd
+    }
 }

@@ -82,7 +82,7 @@ return [
         $write_fn = function($errno, $errstr, $errfile, $errline) use ($container, $settings, $errorno_fn) {
             $format = '['.date('d/m/Y H:i:s').'] '. $errorno_fn($errno).': '.$errstr.' at '.$errfile.' ('.$errline.")\r\n";
             $telegram = $container->get(Albatiqy\Slimlibs\Providers\Libs\TelegramBot::class);
-            $telegram->messageUser('albatiqy', $format);
+            $telegram->messageUserText('albatiqy', $format);
             //file_put_contents($settings['log_dir'].'/php-error.log', $format, FILE_APPEND);
         };
         $last_error = error_get_last();
