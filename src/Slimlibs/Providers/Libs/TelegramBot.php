@@ -280,9 +280,11 @@ final class TelegramBot {
                                     $scmdo = $entity->offset+$entity->length;
                                     if (\strlen($message->text)>$scmdo) {
                                         $subcmdc = \substr($message->text, $scmdo+1);
-                                        $subcmdc = \substr($subcmdc, 0, \strpos($subcmdc,' '));
+                                        if (\strpos($subcmdc, ' ')!==false) {
+                                            $subcmdc = \substr($subcmdc, 0, \strpos($subcmdc,' ')-1);
+                                        }
                                         if (\substr($subcmdc, 0, 1)==':') {
-                                            $subcmd = \strpos($subcmdc, 1);
+                                            $subcmd = \substr($subcmdc, 1);
                                         }
                                     }
                                     $fileload = \APP_DIR . '/var/telegramcmds' . $command . '.php';
