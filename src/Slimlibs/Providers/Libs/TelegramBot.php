@@ -279,7 +279,7 @@ final class TelegramBot {
                                     $subcmd = null;
                                     $scmdo = $entity->offset+$entity->length;
                                     if (\strlen($message->text)>$scmdo) {
-                                        $subcmdc = \substr($message->text, $scmdo+1);
+                                        $subcmdc = \substr($message->text, $scmdo);
                                         if (\strpos($subcmdc, ' ')!==false) {
                                             $subcmdc = \substr($subcmdc, 0, \strpos($subcmdc,' ')-1);
                                         }
