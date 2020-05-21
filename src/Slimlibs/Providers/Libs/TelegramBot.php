@@ -276,7 +276,7 @@ final class TelegramBot {
                             foreach ($entities as $entity) {
                                 if ($entity->type=='bot_command') {
                                     $command = \substr($message->text, $entity->offset, $entity->length);
-                                    $subcmdc = \explode('@', $command);
+                                    $subcmdc = \explode(':', $command);
                                     $fileload = \APP_DIR . '/var/telegramcmds' . $subcmdc[0] . '.php';
                                     if (\file_exists($fileload)) {
                                         $cmdmanifest = require $fileload;
