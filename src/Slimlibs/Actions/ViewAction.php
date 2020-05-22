@@ -51,6 +51,7 @@ abstract class ViewAction {
                 throw new \Albatiqy\Slimlibs\Error\Exception\MaintenanceModeException($request);
             }
         }
+        $this->setHits($args);
         if ($this->settings['cache']['pages']) {
             if (static::CACHE) {
                 $pathuri = \substr($request->getUri()->getPath(), \strlen(\BASE_PATH));
@@ -117,6 +118,8 @@ abstract class ViewAction {
         }
         return $profile;
     }
+
+    protected function setHits($args) {}
 
     protected function cacheIdSave($module, $key) {
         $fdir = \APP_DIR.'/var/resources/routecache/'.$module;
