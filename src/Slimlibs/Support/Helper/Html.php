@@ -55,6 +55,28 @@ final class Html { // suggest mediaembed
         return $images;
     }
 
+    public static function findFirstMedia($html) {
+        if (!$html) {
+            return null;
+        }
+        $MediaEmbed = new \MediaEmbed\MediaEmbed();
+        $dom = new \DOMDocument();
+        \libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
+        \libxml_use_internal_errors(false);
+        $xpath = new \DOMXPath($dom);
+        $figures = $xpath->query('//iframe[not(@class)]');
+        foreach ($figures as $figure) {
+            $url = $figure->getAttribute('src');
+            $MediaObject = $MediaEmbed->parseUrl($url);
+            if ($MediaObject) {
+                $imageSrc = $MediaObject->getImageSrc();
+                return (object)['src'=>$url, 'type'=>$MediaObject->slug(), 'thumbnail'=>$imageSrc];
+            }
+        }
+        return null;
+    }
+
     public static function entities($string, $preserve_encoded_entities = false)
     {
         if ($preserve_encoded_entities) {
