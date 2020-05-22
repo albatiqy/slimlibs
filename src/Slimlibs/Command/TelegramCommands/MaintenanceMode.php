@@ -8,8 +8,8 @@ final class MaintenanceMode extends AbstractTelegramCommand {
 
     protected const MAP = 'maintenance';
 
-    public function run($message, $bot) {
-        $bot->sendUserText($message->chat->id, 'subcommand required', $message->message_id);
+    public function run($arguments, $message, $bot) {
+        $this->help($arguments, $message, $bot);
     }
 
     /**
@@ -17,7 +17,7 @@ final class MaintenanceMode extends AbstractTelegramCommand {
      *
      * @map [on]
      */
-    public function on($message, $bot) {
+    public function on($arguments, $message, $bot) {
         $da = $this->container->get(Configs::class);
         if ($da->set('app.maintenance_mode', 1)) {
             $bot->sendUserText($message->chat->id, 'setting updated', $message->message_id);
@@ -29,7 +29,7 @@ final class MaintenanceMode extends AbstractTelegramCommand {
      *
      * @map [off]
      */
-    public function off($message, $bot) {
+    public function off($arguments, $message, $bot) {
         $da = $this->container->get(Configs::class);
         if ($da->set('app.maintenance_mode', 0)) {
             $bot->sendUserText($message->chat->id, 'setting updated', $message->message_id);

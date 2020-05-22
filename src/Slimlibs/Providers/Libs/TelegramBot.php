@@ -278,10 +278,18 @@ final class TelegramBot {
                                     $command = \substr($message->text, $entity->offset, $entity->length);
                                     $subcmd = null;
                                     $scmdo = $entity->offset+$entity->length;
+                                    $arguments = null;
                                     if (\strlen($message->text)>$scmdo) {
                                         $subcmdc = \substr($message->text, $scmdo);
                                         if (\strpos($subcmdc, ' ')!==false) {
-                                            $subcmdc = \substr($subcmdc, 0, \strpos($subcmdc,' ')-1);
+                                            $sppos = \strpos($subcmdc,' ');
+                                            $restcmd = \substr($subcmdc, $sppos+1);
+                                            $subcmdc = \substr($subcmdc, 0, $sppos-1);
+                                            \preg_match('/^\(.*?\)/', $restcmd, $mtch);
+                                            if (\count($mtch) > 0) {
+                                                $conf = \substr($mtch[0], 1, -1);
+                                                $arguments = \trim($conf);
+                                            }
                                         }
                                         if (\substr($subcmdc, 0, 1)=='.') {
                                             $subcmd = \substr($subcmdc, 1);
@@ -292,6 +300,7 @@ final class TelegramBot {
                                         $cmdmanifest = require $fileload;
                                         $reflect = new \ReflectionClass($cmdmanifest['handler']);
                                         $instance = $reflect->newInstance($this->container);
+                                        $instance->setMeta($cmdmanifest);
 
                                         if ($subcmd!=null) {
                                             $cmd = $cmdmanifest['options']['commands'][$subcmd]??null;
@@ -301,10 +310,10 @@ final class TelegramBot {
                                                 $cmd = null;
                                             }
                                             if ($cmd != null) {
-                                                $instance->$cmd($message, $this);
+                                                $instance->$cmd($arguments, $message, $this);
                                             }
                                         } else {
-                                            $instance->run($message, $this);
+                                            $instance->run($arguments, $message, $this);
                                         }
                                     } else {
                                         if ($message->chat->type=='private') {
