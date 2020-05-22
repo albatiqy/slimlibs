@@ -87,7 +87,7 @@ final class Telegram extends AbstractCommand {
         $cmds = [];
         foreach ($methods as $method) {
             $mname = $method->getName();
-            if (!\in_array($mname, ['__construct', 'run'])) {
+            if (!\in_array($mname, ['__construct', 'setMeta', 'run'])) {
                 $cmd = [];
                 $doc_block = new DocBlock($method);
                 $cmd['desc'] = $doc_block->getComment();
