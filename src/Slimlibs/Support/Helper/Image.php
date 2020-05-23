@@ -62,6 +62,48 @@ final class Image {
         }
     }
 
+    public static function cache($url) {
+        $parse_url = \parse_url($url);
+        $base_dir = \APP_DIR . '/var/cache/imgcache/';
+        $fcache = $base_dir.$parse_url['host'].$parse_url['path'];
+        $key = null;
+        if (\file_exists($fcache)) {
+            $expires = (\filemtime($fcache) + (60*60*24*30));
+            $now = \time() + 30;
+            if ($expires <= $now) {
+                $ch = \curl_init($url);
+                $fp = \fopen($fcache, 'wb');
+                \curl_setopt($ch, \CURLOPT_FILE, $fp);
+                \curl_setopt($ch, \CURLOPT_HEADER, 0);
+                \curl_exec($ch);
+                \curl_close($ch);
+                \fclose($fp);
+                $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
+                \file_put_contents($base_dir.$key, $fcache);
+                \file_put_contents($fcache.'.map', $key);
+            } else {
+                $key = \file_get_contents($fcache.'.map');
+            }
+        } else {
+            $dir = \dirname($fcache);
+            if (!\is_dir($dir)) {
+                \umask(2);
+                \mkdir($dir, 0777, true);
+            }
+            $ch = \curl_init($url);
+            $fp = \fopen($fcache, 'wb');
+            \curl_setopt($ch, \CURLOPT_FILE, $fp);
+            \curl_setopt($ch, \CURLOPT_HEADER, 0);
+            \curl_exec($ch);
+            \curl_close($ch);
+            \fclose($fp);
+            $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
+            \file_put_contents($base_dir.$key, $fcache);
+            \file_put_contents($fcache.'.map', $key);
+        }
+        return $key;
+    }
+
     private static function gps2Num($coordPart){
         $parts = \explode('/', $coordPart);
         if(\count($parts) <= 0)

@@ -1,6 +1,8 @@
 <?php declare (strict_types = 1);
 namespace Albatiqy\Slimlibs\Support\Helper;
 
+use Albatiqy\Slimlibs\Support\Helper\Image;
+
 final class Html { // suggest mediaembed
 
     public static function getImagesSrc($html, $first=false) {
@@ -43,6 +45,14 @@ final class Html { // suggest mediaembed
             $MediaObject = $MediaEmbed->parseUrl($url);
             if ($MediaObject) {
                 $imageSrc = $MediaObject->getImageSrc();
+                $type = $MediaObject->slug();
+                if ($type=='youtube') {
+                    $parse_url = \parse_url($imageSrc);
+                    $dir = \dirname($parse_url['path']);
+                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/maxresdefault.jpg';
+                }
+                $key = Image::cache($imageSrc);
+                $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
                 if ($first) {
                     return $imageSrc;
                 }
@@ -71,7 +81,15 @@ final class Html { // suggest mediaembed
             $MediaObject = $MediaEmbed->parseUrl($url);
             if ($MediaObject) {
                 $imageSrc = $MediaObject->getImageSrc();
-                return (object)['src'=>$url, 'type'=>$MediaObject->slug(), 'thumbnail'=>$imageSrc];
+                $type = $MediaObject->slug();
+                if ($type=='youtube') {
+                    $parse_url = \parse_url($imageSrc);
+                    $dir = \dirname($parse_url['path']);
+                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/maxresdefault.jpg';
+                }
+                $key = Image::cache($imageSrc);
+                $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
+                return (object)['src'=>$url, 'type'=>$type, 'thumbnail'=>$imageSrc];
             }
         }
         return null;
