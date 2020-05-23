@@ -71,11 +71,16 @@ final class Image {
             $expires = (\filemtime($fcache) + (60*60*24*30));
             $now = \time() + 30;
             if ($expires <= $now) {
-                $ch = \curl_init($url);
+                $ch = \curl_init();
                 $fp = \fopen($fcache, 'wb');
+                \curl_setopt($ch, \CURLOPT_URL, $url);
+                \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, 1);
+                \curl_setopt($ch, \CURLOPT_CONNECTTIMEOUT, 10);
+                \curl_setopt($ch, \CURLOPT_SSL_VERIFYPEER, 0);
+                \curl_setopt($ch, \CURLOPT_BINARYTRANSFER, 1);
                 \curl_setopt($ch, \CURLOPT_FILE, $fp);
                 \curl_setopt($ch, \CURLOPT_HEADER, 0);
-                \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+                \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
                 \curl_exec($ch);
                 \curl_close($ch);
                 \fclose($fp);
@@ -93,9 +98,14 @@ final class Image {
             }
             $ch = \curl_init($url);
             $fp = \fopen($fcache, 'wb');
+            \curl_setopt($ch, \CURLOPT_URL, $url);
+            \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, 1);
+            \curl_setopt($ch, \CURLOPT_CONNECTTIMEOUT, 10);
+            \curl_setopt($ch, \CURLOPT_SSL_VERIFYPEER, 0);
+            \curl_setopt($ch, \CURLOPT_BINARYTRANSFER, 1);
             \curl_setopt($ch, \CURLOPT_FILE, $fp);
             \curl_setopt($ch, \CURLOPT_HEADER, 0);
-            \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+            \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
             \curl_exec($ch);
             \curl_close($ch);
             \fclose($fp);
