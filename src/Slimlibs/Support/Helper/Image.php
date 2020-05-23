@@ -96,7 +96,7 @@ final class Image {
                 \umask(2);
                 \mkdir($dir, 0777, true);
             }
-            $ch = \curl_init($url);
+            $ch = \curl_init();
             $fp = \fopen($fcache, 'wb');
             \curl_setopt($ch, \CURLOPT_URL, $url);
             \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, 1);
