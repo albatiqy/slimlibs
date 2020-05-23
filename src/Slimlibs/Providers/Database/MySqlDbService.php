@@ -296,7 +296,7 @@ abstract class MySqlDbService extends DbService {
         return \implode(', ', $out);
     }
 
-    private static function filter($params, &$bindings, $attribs = []) {
+    protected static function filter($params, &$bindings, $attribs = []) {
         $globalSearch = [];
         $columnSearch = [];
         if (!empty($params['search'])) {
@@ -358,7 +358,7 @@ abstract class MySqlDbService extends DbService {
         return $where;
     }
 
-    private static function limit($params, $recordsFiltered, &$lastPage) {
+    protected static function limit($params, $recordsFiltered, &$lastPage) {
         $limit = '';
         $lastPage = 0;
         if (isset($params['length'])) {
@@ -393,7 +393,7 @@ abstract class MySqlDbService extends DbService {
         return $limit;
     }
 
-    private static function order($params) {
+    protected static function order($params) {
         $order = '';
         if (!empty($params['orders'])) {
             $orderBy = [];
