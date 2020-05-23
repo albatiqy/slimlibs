@@ -108,6 +108,8 @@ final class Image {
             \curl_setopt($ch, \CURLOPT_FILE, $fp);
             \curl_setopt($ch, \CURLOPT_HEADER, 0);
             \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+            $httpCode = \curl_getinfo($ch , \CURLINFO_HTTP_CODE);
+            \file_put_contents(\APP_DIR . '/var/tmp/xz', \curl_error($ch)."\r\n".$httpCode);
             \curl_exec($ch);
             \curl_close($ch);
             \fclose($fp);
