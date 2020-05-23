@@ -71,16 +71,12 @@ final class Image {
             $expires = (\filemtime($fcache) + (60*60*24*30));
             $now = \time() + 30;
             if ($expires <= $now) {
-                $ch = \curl_init();
+                $ch = \curl_init($url);
                 $fp = \fopen($fcache, 'wb');
                 \curl_setopt($ch, \CURLOPT_FILE, $fp);
                 \curl_setopt($ch, \CURLOPT_HEADER, 0);
                 \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
                 \curl_exec($ch);
-                if (\curl_errno($ch)) {
-                    $error_msg = \curl_error($ch);
-                    \file_put_contents(\APP_DIR . '/var/tmp/z', $error_msg);
-                }
                 \curl_close($ch);
                 \fclose($fp);
                 $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
