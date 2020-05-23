@@ -13,7 +13,7 @@ final class MaintenanceMode extends AbstractTelegramCommand {
     }
 
     /**
-     * set maintenance mode
+     * set maintenance mode on
      *
      * @map [on]
      */
@@ -25,7 +25,7 @@ final class MaintenanceMode extends AbstractTelegramCommand {
     }
 
     /**
-     * set maintenance mode
+     * set maintenance mode off
      *
      * @map [off]
      */
