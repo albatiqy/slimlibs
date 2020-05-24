@@ -437,7 +437,7 @@ abstract class MySqlDbService extends DbService {
         return $stmt->fetchAll();
     }
 
-    private static function bind(&$a, $val) {
+    protected static function bind(&$a, $val) {
         $key = ':binding_' . \count($a);
         /*
         $a[] = ['key' => $key, 'val' => $val];
