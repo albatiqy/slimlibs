@@ -64,11 +64,11 @@ final class Image {
 
     public static function cache($url) {
         if (\strpos($url, '//')===0) {
-            $url = 'https:'.$url;
+            $url = 'http:'.$url;
         }
         $parse_url = \parse_url($url);
-        $base_dir = \APP_DIR . '/var/cache/imgcache/';
-        $fcache = $base_dir.$parse_url['host'].$parse_url['path'];
+        $base_dir = \APP_DIR . '/var/resources/imgcache';
+        $fcache = $base_dir.'/srcs/'.$parse_url['host'].$parse_url['path'];
         $key = null;
         if (\file_exists($fcache)) {
             $expires = (\filemtime($fcache) + (60*60*24*30));
@@ -88,7 +88,7 @@ final class Image {
                 \curl_close($ch);
                 \fclose($fp);
                 $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
-                \file_put_contents($base_dir.$key, $fcache);
+                \file_put_contents($base_dir.'/keys/'.$key, $fcache);
                 \file_put_contents($fcache.'.map', $key);
             } else {
                 $key = \file_get_contents($fcache.'.map');
@@ -113,7 +113,7 @@ final class Image {
             \curl_close($ch);
             \fclose($fp);
             $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
-            \file_put_contents($base_dir.$key, $fcache);
+            \file_put_contents($base_dir.'/keys/'.$key, $fcache);
             \file_put_contents($fcache.'.map', $key);
         }
         return $key;
