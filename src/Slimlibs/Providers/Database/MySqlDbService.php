@@ -31,9 +31,9 @@ abstract class MySqlDbService extends DbService {
         if (!$db->inTransaction()) {
             throw new \Exception(__METHOD__ . " require active transaction");
         }
-        $primaryKey = self::primaryKeyDef();
-        $table = static::TABLE_NAME;
-        $sql = "select $primaryKey pk01 from $table order by $primaryKey desc limit 0,1";
+        $primaryKey = self::primaryKeyDefX();
+        $table = static::tableX();
+        $sql = "select $primaryKey pk01 from $table order by created_at desc limit 0,1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $row = $stmt->fetch();

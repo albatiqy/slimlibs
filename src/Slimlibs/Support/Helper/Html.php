@@ -3,7 +3,7 @@ namespace Albatiqy\Slimlibs\Support\Helper;
 
 use Albatiqy\Slimlibs\Support\Helper\Image;
 
-final class Html { // suggest mediaembed
+final class Html {
 
     public static function getImagesSrc($html, $first=false) {
         if (!$html) {
@@ -33,31 +33,27 @@ final class Html { // suggest mediaembed
                 }
             }
         }
-        $MediaEmbed = new \MediaEmbed\MediaEmbed();
         $dom = new \DOMDocument();
         \libxml_use_internal_errors(true);
         $dom->loadHTML($html);
         \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//iframe[not(@class)]');
+        $figures = $xpath->query("//iframe[starts-with(@class, 'xapp-') and contains(@class, '-media') and not(@class='xapp-pdf-media')]");
         foreach ($figures as $figure) {
-            $url = $figure->getAttribute('src');
-            $MediaObject = $MediaEmbed->parseUrl($url);
-            if ($MediaObject) {
-                $imageSrc = $MediaObject->getImageSrc();
-                $type = $MediaObject->slug();
-                if ($type=='youtube') {
+            $class = $figure->getAttribute('class');
+            $imageSrc = $figure->getAttribute('data-thumbnail');
+            switch ($class) {
+                case 'xapp-youtube-media':
                     $parse_url = \parse_url($imageSrc);
                     $dir = \dirname($parse_url['path']);
                     $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/maxresdefault.jpg';
-                }
-                $key = Image::cache($imageSrc);
-                $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
-                if ($first) {
-                    return $imageSrc;
-                }
-                $images[] = $imageSrc;
             }
+            $key = Image::cache($imageSrc);
+            $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
+            if ($first) {
+                return $imageSrc;
+            }
+            $images[] = $imageSrc;
         }
         if ($first) {
             return false;
@@ -69,28 +65,25 @@ final class Html { // suggest mediaembed
         if (!$html) {
             return null;
         }
-        $MediaEmbed = new \MediaEmbed\MediaEmbed();
         $dom = new \DOMDocument();
         \libxml_use_internal_errors(true);
         $dom->loadHTML($html);
         \libxml_use_internal_errors(false);
         $xpath = new \DOMXPath($dom);
-        $figures = $xpath->query('//iframe[not(@class)]');
+        $figures = $xpath->query("//iframe[starts-with(@class, 'xapp-') and contains(@class, '-media') and not(@class='xapp-pdf-media')]");
         foreach ($figures as $figure) {
-            $url = $figure->getAttribute('src');
-            $MediaObject = $MediaEmbed->parseUrl($url);
-            if ($MediaObject) {
-                $imageSrc = $MediaObject->getImageSrc();
-                $type = $MediaObject->slug();
-                if ($type=='youtube') {
+            $class = $figure->getAttribute('class');
+            $imageSrc = $figure->getAttribute('data-thumbnail');
+            $src = $figure->getAttribute('data-src');
+            switch ($class) {
+                case 'xapp-youtube-media':
                     $parse_url = \parse_url($imageSrc);
                     $dir = \dirname($parse_url['path']);
                     $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/maxresdefault.jpg';
-                }
-                $key = Image::cache($imageSrc);
-                $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
-                return (object)['src'=>$url, 'type'=>$type, 'thumbnail'=>$imageSrc];
             }
+            $key = Image::cache($imageSrc);
+            $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
+            return (object)['src'=>$src, 'class'=>$class, 'thumbnail'=>$imageSrc];
         }
         return null;
     }
