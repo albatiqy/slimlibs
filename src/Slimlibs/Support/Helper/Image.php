@@ -87,9 +87,13 @@ final class Image {
                 \curl_exec($ch);
                 \curl_close($ch);
                 \fclose($fp);
+                $fmap = $fcache.'.map';
                 $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
+                if (\file_exists($fmap)) {
+                    $key = \file_get_contents($fmap);
+                }
                 \file_put_contents($base_dir.'/keys/'.$key, $fcache);
-                \file_put_contents($fcache.'.map', $key);
+                \file_put_contents($fmap, $key);
             } else {
                 $key = \file_get_contents($fcache.'.map');
             }
@@ -112,9 +116,13 @@ final class Image {
             \curl_exec($ch);
             \curl_close($ch);
             \fclose($fp);
+            $fmap = $fcache.'.map';
             $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
+            if (\file_exists($fmap)) {
+                $key = \file_get_contents($fmap);
+            }
             \file_put_contents($base_dir.'/keys/'.$key, $fcache);
-            \file_put_contents($fcache.'.map', $key);
+            \file_put_contents($fmap, $key);
         }
         return $key;
     }
