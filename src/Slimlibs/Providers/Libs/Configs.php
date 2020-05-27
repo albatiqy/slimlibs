@@ -57,7 +57,6 @@ final class Configs implements UseObjectCacheInterface {
         $validator = $this->getValidator();
         foreach ($kv as $key=>$itm) {
             if (!$validator->validate(['k'=>$key, 'v'=>$itm])) {
-                \file_put_contents(\APP_DIR . '/var/tmp/ze', $key.' '.$itm);
                 return false;
             }
         }
