@@ -61,6 +61,24 @@ final class Html {
         return $images;
     }
 
+    public static function getYoutubes($html) {
+        if (!$html) {
+            return [];
+        }
+        $results = [];
+        $dom = new \DOMDocument();
+        \libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
+        \libxml_use_internal_errors(false);
+        $xpath = new \DOMXPath($dom);
+        $figures = $xpath->query("//iframe[@class='xapp-youtube-media']");
+        foreach ($figures as $figure) {
+            $src = $figure->getAttribute('data-src');
+            $results[] = $src;
+        }
+        return $results;
+    }
+
     public static function findFirstMedia($html) {
         if (!$html) {
             return null;
