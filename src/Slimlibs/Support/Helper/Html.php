@@ -97,7 +97,7 @@ final class Html {
                 case 'xapp-youtube-media':
                     $parse_url = \parse_url($imageSrc);
                     $dir = \dirname($parse_url['path']);
-                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/maxresdefault.jpg';
+                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/hqdefault.jpg';
             }
             $key = Image::cache($imageSrc);
             $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
