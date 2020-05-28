@@ -49,6 +49,9 @@ echo implode(', ', $type);
 ?>}
 },
 SlimlibsHandleHttpJSONResponse = async function(response) { // text status???
+    if (response.status==204) {
+        return null
+    }
     if (['application/json', 'text/json'].includes(response.headers.get('Content-Type'))) {
         let json = null
         try {
