@@ -93,6 +93,7 @@ final class Html {
             $class = $figure->getAttribute('class');
             $imageSrc = $figure->getAttribute('data-thumbnail');
             $src = $figure->getAttribute('data-src');
+            $url = $figure->getAttribute('src');
             switch ($class) {
                 case 'xapp-youtube-media':
                     $parse_url = \parse_url($imageSrc);
@@ -101,7 +102,7 @@ final class Html {
             }
             $key = Image::cache($imageSrc);
             $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
-            return (object)['src'=>$src, 'class'=>$class, 'thumbnail'=>$imageSrc];
+            return (object)['url'=>$url, 'src'=>$src, 'class'=>$class, 'thumbnail'=>$imageSrc];
         }
         return null;
     }
