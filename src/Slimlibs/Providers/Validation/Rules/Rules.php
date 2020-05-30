@@ -436,6 +436,29 @@ final class Rules {
         return self::regexp($value, '/^[0-9]{16}$/');
     }
 
+    public static function nip($value) {
+        if (!self::regexp($value, '/^[0-9]{18}$/')) {
+            return false;
+        }
+        $y = (int)\substr($value,0,4);
+        $m = (int)\substr($value,4,2);
+        $d = (int)\substr($value,6,2);
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $y = (int)\substr($value,8,4);
+        $m = (int)\substr($value,12,2);
+        $d = 1;
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $jk = (int)\substr($value,14,1);
+        if (!\in_array($jk, [1,2])) {
+            return false;
+        }
+        return true;
+    }
+
     public static function nama($value) {
         return self::regexp($value, '/^[A-Za-z ,.\']{3,255}$/');
     }
