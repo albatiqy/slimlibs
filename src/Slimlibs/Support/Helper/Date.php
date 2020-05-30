@@ -29,6 +29,35 @@ final class Date {
         return $rentang_tanggal;
     }
 
+    public static function rangeTimeFormat($date1, $date2) {
+        $src_mulai = \date_create_from_format(self::DATE_FORMAT, $date1);
+        $src_selesai = null;
+        $arr_mulai = [\date_format($src_mulai, "j"), \date_format($src_mulai, "n"), \date_format($src_mulai, "Y")];
+        $arr_selesai = [];
+        $rentang_tanggal = '';
+        if ($date2) {
+            $src_selesai = \date_create_from_format(self::DATE_FORMAT, $date2);
+            if ($src_selesai->getTimestamp() < $src_mulai->getTimestamp()) {
+                $tmp = $src_mulai;
+                $src_mulai = $src_selesai;
+                $src_selesai = $tmp;
+            }
+            $arr_selesai = [\date_format($src_selesai, "j"), \date_format($src_selesai, "n"), \date_format($src_selesai, "Y")];
+            if (\date_format($src_mulai, "Y-m-d")==\date_format($src_selesai, "Y-m-d")) {
+                if (\date_format($src_mulai, "H:i")==\date_format($src_selesai, "H:i")) {
+                    $rentang_tanggal = self::$hari[\date_format($src_mulai, "w")].' '.$arr_mulai[0].' '.self::$bulan[$arr_mulai[1]].' '.$arr_mulai[2].', pukul '.\date_format($src_selesai, "H:i").' WIB';
+                } else {
+                    $rentang_tanggal = self::$hari[\date_format($src_mulai, "w")].' '.$arr_mulai[0].' '.self::$bulan[$arr_mulai[1]].' '.$arr_mulai[2].', pukul '.\date_format($src_mulai, "H:i").' s.d. '.\date_format($src_selesai, "H:i").' WIB';
+                }
+            } else {
+                $rentang_tanggal = self::$hari[\date_format($src_mulai, "w")].' '.$arr_mulai[0].' '.self::$bulan[$arr_mulai[1]].' '.$arr_mulai[2].' pukul '.\date_format($src_mulai, "H:i").' WIB s.d. '.self::$hari[\date_format($src_selesai, "w")].' '.$arr_selesai[0].' '.self::$bulan[$arr_selesai[1]].' '.$arr_selesai[2].' pukul '.\date_format($src_selesai, "H:i").' WIB';
+            }
+        } else {
+            $rentang_tanggal = self::$hari[\date_format($src_mulai, "w")].' '.$arr_mulai[0].' '.self::$bulan[$arr_mulai[1]].' '.$arr_mulai[2].', pukul '.\date_format($src_mulai, "H:i").' WIB';
+        }
+        return $rentang_tanggal;
+    }
+
     public static function format($date, $hari = false) {
         $src = \date_create_from_format(self::DATE_FORMAT, $date);
         return ($hari?self::$hari[\date_format($src, "w")].', ':'').\date_format($src, "j").' '.self::$bulan[\date_format($src, "n")].' '.\date_format($src, "Y");
