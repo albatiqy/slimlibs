@@ -34,7 +34,10 @@ class ErrorHandler extends SlimErrorHandler {
                         $settings = $this->container->get('settings');
                         $uri = $this->request->getUri();
                         $loginuri = $settings['login_path'].'?return=' . \urlencode($uri->getPath());
-                        if (\strpos($callable, 'App\\Actions\\Web\Modules')===0) {
+                        if (
+                                \strpos($callable, 'App\\Actions\\Web\Modules')===0 ||
+                                \strpos($callable, 'App\\Actions\\Resource')===0
+                            ) {
                             $loginuri = '/mlogin?return=' . \urlencode($uri->getPath());
                         }
                         $response = $this->responseFactory->createResponse(302);
