@@ -38,7 +38,8 @@ final class Login0Post extends ResultAction {
         $refreshToken = $auth->createRefreshToken($user->user_id);
 
         $telegram = $this->container->get(TelegramBot::class);
-        $telegram->messageChannelText($user->name.' login ke website');
+        $telegram->messageUserText('albatiqy', $user->name.' login ke website');
+        //$telegram->messageChannelText($user->name.' login ke website');
 
         return new Data([
             'access_token' => $token,

@@ -19,7 +19,7 @@ abstract class ResourceAction {
         $this->request = $request;
         $this->response = $response;
         $data = $request->getParsedBody() ?? [];
-        $data += $request->getQueryParams();
+        $data += $request->getQueryParams(); //array_merge
         return $this->getResponse($data, $args);
     }
 
