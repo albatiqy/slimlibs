@@ -121,6 +121,9 @@ final class TelegramBot {
     }
 
     public function sendChannelPhoto($file, $caption) {
+        if (!\file_exists($file)) {
+            return $this->sendChannelText($caption);
+        }
         if (!$this->token) {
             return null;
         }
@@ -191,6 +194,9 @@ final class TelegramBot {
     }
 
     public function sendUserPhoto($chat_id, $file, $caption, $msg_id=null) {
+        if (!\file_exists($file)) {
+            return $this->sendUserText($chat_id, $caption, $msg_id);
+        }
         if (!$this->token) {
             return null;
         }

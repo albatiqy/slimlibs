@@ -9,7 +9,7 @@ abstract class MySqlDbService extends DbService {
     private static $strippedTbl = [];
 
     protected function initialize() {}
-    protected function getRules($opr, $data) {return [];}
+    protected function getRules($opr, $data=[], $id=null) {return [];}
 
     protected static function tableX() {
         if (!isset(self::$strippedTbl[static::ENTITY_NAME])) {
@@ -191,7 +191,7 @@ abstract class MySqlDbService extends DbService {
 
     public function update($data, $id, $pkUpd = '') { // remove primary key from $data
         $db = $this->db();
-        $validator = $this->container->get('validator')($this->getRules(self::RULE_UPDATE, $data));
+        $validator = $this->container->get('validator')($this->getRules(self::RULE_UPDATE, $data, $id));
         if ($validator->validate($data)) {
             $data = $validator->getValues();
 
