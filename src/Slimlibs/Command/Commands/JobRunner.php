@@ -166,7 +166,7 @@ final class JobRunner extends AbstractCommand {
             foreach ($jobs as $job) {
                 $time = \DateTime::createFromFormat('Y-m-d H:i:s', $job->schedule);
                 $now = new \DateTime();
-                if ($time >= $now) {
+                if ($time <= $now) {
                     $fileload = \APP_DIR . '/var/jobs/' . $job->job . '.php';
                     if (!\file_exists($fileload)) {
                         $da_jobs->setResult($job->id, Jobs::STATE_ERROR, 'job tidak ditemukan');
