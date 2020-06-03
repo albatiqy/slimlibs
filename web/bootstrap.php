@@ -10,7 +10,7 @@ $settings = require LIBS_DIR . '/requires/settings.php';
 //ini_set('error_log', $settings['log_dir'].'/php-error.log'); //cause empty logs
 
 $container = (require LIBS_DIR . '/requires/container.php')($settings);
-set_error_handler($container->get('php_error_handler'));
+//set_error_handler($container->get('php_error_handler'));
 
 $app = (require LIBS_DIR . '/requires/app.php')($container);
 $app->setBasePath(BASE_PATH);

@@ -9,7 +9,7 @@ abstract class MySqlDbService extends DbService {
     private static $strippedTbl = [];
 
     protected function initialize() {}
-    protected function getRules($opr, $data=[], $id=null) {return [];}
+    protected function getRules($opr, $data, $id) {return [];}
 
     protected static function tableX() {
         if (!isset(self::$strippedTbl[static::ENTITY_NAME])) {
@@ -141,7 +141,7 @@ abstract class MySqlDbService extends DbService {
 
     public function create($data) {
         $db = $this->db();
-        $validator = $this->container->get('validator')($this->getRules(self::RULE_CREATE, $data), $this->getLabels());
+        $validator = $this->container->get('validator')($this->getRules(self::RULE_CREATE, $data, null), $this->getLabels());
         if ($validator->validate($data)) {
             $data = $validator->getValues();
             $data = $this->processData($data, self::RULE_CREATE);
