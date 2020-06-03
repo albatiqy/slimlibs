@@ -141,7 +141,6 @@ final class Slimlibs extends AbstractCommand {
                     if (!$reflect->getConstant('DISABLED')) {
                         $schedules[$reflect->getConstant('MAP')] = $reflect;
                     }
-                    $schedules[$reflect->getConstant('MAP')] = $reflect;
                 }
             }
         }
