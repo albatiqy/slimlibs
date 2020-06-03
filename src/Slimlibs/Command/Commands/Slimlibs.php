@@ -125,7 +125,9 @@ final class Slimlibs extends AbstractCommand {
                 $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                 $this->writeLine('mapping '.$tomap);
                 $reflect = new \ReflectionClass('\\Albatiqy\\Slimlibs\\Command\\Schedules\\' . $tomap);
-                $schedules[$reflect->getConstant('MAP')] = $reflect;
+                if (!$reflect->getConstant('DISABLED')) {
+                    $schedules[$reflect->getConstant('MAP')] = $reflect;
+                }
             }
         }
         $dir = \APP_DIR . '/src/Command/Schedules';
@@ -136,6 +138,9 @@ final class Slimlibs extends AbstractCommand {
                     $tomap = $fileinfo->getBasename('.' . $fileinfo->getExtension());
                     $this->writeLine('mapping '.$tomap);
                     $reflect = new \ReflectionClass('\\App\\Command\\Schedules\\' . $tomap);
+                    if (!$reflect->getConstant('DISABLED')) {
+                        $schedules[$reflect->getConstant('MAP')] = $reflect;
+                    }
                     $schedules[$reflect->getConstant('MAP')] = $reflect;
                 }
             }

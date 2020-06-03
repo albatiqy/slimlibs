@@ -44,7 +44,7 @@ final class JobRunner extends AbstractCommand {
      *
      * @alias [remap]
      */
-    public function remap() { //v2============
+    public function remap() { //v2============ detect name collision ???
         $vdir = \APP_DIR . '/var/jobs';
         Fs::rmDir($vdir, false);
 
@@ -161,6 +161,42 @@ final class JobRunner extends AbstractCommand {
                     }
                 }
             }
+
+            $jobs = $da_jobs->remainSchedules();
+            foreach ($jobs as $job) {
+                $time = \DateTime::createFromFormat('Y-m-d H:i:s', $job->schedule);
+                $now = new \DateTime();
+                if ($time >= $now) {
+                    $fileload = \APP_DIR . '/var/jobs/' . $job->job . '.php';
+                    if (!\file_exists($fileload)) {
+                        $da_jobs->setResult($job->id, Jobs::STATE_ERROR, 'job tidak ditemukan');
+                    } else {
+                        $cmdmanifest = require $fileload;
+                        $reflect = $cmdmanifest['handler'];
+                        $reflect = new \ReflectionClass($reflect);
+
+                        $instance = $reflect->newInstance($this->container); // check parent type
+                        $props = $cmdmanifest['options']['props'];
+                        $data = \json_decode($job->data, true);
+                        foreach ($data as $k => $v) {
+                            $property = $reflect->getProperty($props[$k]['name']);
+                            $property->setValue($instance, $v);
+                        }
+                        $output = '';
+                        $logs = '';
+                        try {
+                            $result = $instance->run();
+                            $output = $instance->getOutput();
+                            $logs = $instance->getLogs();
+                            //$da_jobs->flagFinished($job->id);
+                            $da_jobs->setResult($job->id, Jobs::STATE_FINISHED, \substr($logs,0,1000), \substr($output,0,2000));
+                        } catch (\Exception $e) {
+                            $da_jobs->setResult($job->id, Jobs::STATE_ERROR, \substr($e->getMessage()."\r\n".$logs,0,1000), \substr($output,0,2000));
+                        }
+                    }
+                }
+            }
+
         }
     }
 

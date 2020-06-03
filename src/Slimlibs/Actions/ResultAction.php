@@ -17,7 +17,7 @@ abstract class ResultAction {
         $this->container = $container;
     }
 
-    public function __invoke($request, $response, $args) {
+    public function __invoke($request, $response, $args) { // maintenance mode???
         $this->request = $request;
         $this->response = $response;
         $data = $request->getParsedBody() ?? [];

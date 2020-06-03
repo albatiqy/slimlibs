@@ -11,6 +11,7 @@ abstract class AbstractSchedule {
 
     protected const MAP = 'undefined';
     protected const SCHEDULE = self::SCH_20S;
+    protected const DISABLED = false;
     protected const JOB_CLASS = '';
     protected const JOB_DATA = [];
 }
