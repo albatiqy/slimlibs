@@ -40,15 +40,6 @@ $settings = [
         'aud' => 'http://site.com',
         'iss'    => 'http://api.mysite.com'
     ],
-    'send_mail' => [
-        'smtp_debug' => 2,
-        'host' => '',
-        'port' => 587,
-        'smtp_secure' => '',
-        'smtp_auth' => true,
-        'username' => '',
-        'password' => ''
-    ],
     'telegram_bot' => [
         'token' => '',
         'channelName' => ''
