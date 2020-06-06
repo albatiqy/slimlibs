@@ -21,16 +21,18 @@ return static function (SlimApp $app) use ($settings) {
                 });
                 $group->group('/module', function (RouteCollectorProxy $group) {
                     $group->group('/media', function (RouteCollectorProxy $group) {
-                        $group->get('/browse', App\Actions\Api\Module\Media\Browse0Get::class);
-                        $group->get('/recentfiles', App\Actions\Api\Module\Media\RecentFiles0Get::class);
+                        $group->get('/browse', Albatiqy\Slimlibs\Actions\Api\Media\Browse0Get::class);
+                        $group->get('/recentfiles', Albatiqy\Slimlibs\Actions\Api\Media\RecentFiles0Get::class);
                     });
                 });
-                $group->group('/users', function (RouteCollectorProxy $group) {
-                    $group->get('', App\Actions\Api\User\V0Get::class);
-                    $group->group('/{id:U\d{9}}', function (RouteCollectorProxy $group) {
-                        $group->get('', App\Actions\Api\User\V0Get::class);
-                        $group->put('', App\Actions\Api\User\V0Put::class);
-                        $group->delete('', App\Actions\Api\User\V0Delete::class);
+                $group->group('/auth', function (RouteCollectorProxy $group) {
+                    $group->group('/users', function (RouteCollectorProxy $group) {
+                        $group->get('', App\Actions\Api\Auth\User\V0Get::class);
+                        $group->group('/{id:U\d{9}}', function (RouteCollectorProxy $group) {
+                            $group->get('', App\Actions\Api\Auth\User\V0Get::class);
+                            $group->put('', App\Actions\Api\Auth\User\V0Put::class);
+                            $group->delete('', App\Actions\Api\Auth\User\V0Delete::class);
+                        });
                     });
                 });
             })->add(Jwt::class);
@@ -41,9 +43,9 @@ return static function (SlimApp $app) use ($settings) {
     $app->get($settings['login_path'], App\Actions\Web\LoginGet::class);
     $app->get('/mlogin', App\Actions\Web\Modules\LoginGet::class);
     $app->group('/resources', function (RouteCollectorProxy $group) {
-        $group->get('/imgcache/{id}', App\Actions\Resource\ImageCacheGet::class);
+        $group->get('/imgcache/{id}', Albatiqy\Slimlibs\Actions\Resource\ImageCacheGet::class);
         $group->group('/media', function (RouteCollectorProxy $group) {
-            $group->get('/{path:.*}', App\Actions\Resource\MediaGet::class);
+            $group->get('/{path:.*}', Albatiqy\Slimlibs\Actions\Resource\MediaGet::class);
         });
     });
     require APP_DIR.'/routes/main.php';

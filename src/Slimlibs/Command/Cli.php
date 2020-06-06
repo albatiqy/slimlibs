@@ -193,6 +193,7 @@ final class Cli {
         }
         if (!$code) {
             $code = CommandException::E_ANY;
+            $error = $error->getMessage();
         }
 
         $this->critical($error, $context);
