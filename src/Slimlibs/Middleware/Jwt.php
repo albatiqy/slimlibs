@@ -39,7 +39,9 @@ final class Jwt implements MiddlewareInterface {
         $auth = $this->container->get(AuthInterface::class);
 
         if (!$auth->isUserActive($payload['uid'])) {
-            throw new UnauthorizedException($request, [], 'Inactive User');
+            if (!$auth->isSuperUser($payload['uid'])) {
+                throw new UnauthorizedException($request, [], 'Inactive User');
+            }
         }
 
         // Append valid token

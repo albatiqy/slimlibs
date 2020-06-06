@@ -38,7 +38,9 @@ final class CookieJwt implements MiddlewareInterface {
         $auth = $this->container->get(AuthInterface::class);
 
         if (!$auth->isUserActive($payload['uid'])) {
-            throw new InactiveUserException($request, $payload['uid']);
+            if (!$auth->isSuperUser($payload['uid'])) {
+                throw new InactiveUserException($request, $payload['uid']);
+            }
         }
 
         $request = $request->withAttribute('payload', $payload);
