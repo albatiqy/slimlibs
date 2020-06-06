@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Albatiqy\Slimlibs\Result\Exception\UnauthorizedException;
+use Albatiqy\Slimlibs\Providers\Auth\AuthInterface;
 
 final class Jwt implements MiddlewareInterface {
 
@@ -33,6 +34,12 @@ final class Jwt implements MiddlewareInterface {
             $payload = $jwt->decode($token);
         } catch (\Exception $e) {
             $this->throwUnauthorizedException($request, $callable);
+        }
+
+        $auth = $this->container->get(AuthInterface::class);
+
+        if (!$auth->isUserActive($payload['uid'])) {
+            throw new UnauthorizedException($request, [], 'Inactive User');
         }
 
         // Append valid token

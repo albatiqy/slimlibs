@@ -6,6 +6,7 @@ use Albatiqy\Slimlibs\Error\HtmlErrorRenderer;
 use Albatiqy\Slimlibs\Error\JsonResultErrorRenderer;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpException;
+use Albatiqy\Slimlibs\Error\Exception\InactiveUserException;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 
 class ErrorHandler extends SlimErrorHandler {
@@ -30,18 +31,20 @@ class ErrorHandler extends SlimErrorHandler {
                 $accepts = \explode(',', $this->request->getHeader('Accept')[0]);
                 if (\count($accepts) > 1) {
                     if ($this->exception->getCode() == 401) {
-                        $callable = $this->request->getAttribute('__route__')->getCallable();
-                        $settings = $this->container->get('settings');
-                        $uri = $this->request->getUri();
-                        $loginuri = $settings['login_path'].'?return=' . \urlencode($uri->getPath());
-                        if (
-                                \strpos($callable, 'App\\Actions\\Web\Modules')===0 ||
-                                \strpos($callable, 'App\\Actions\\Resource')===0
-                            ) {
-                            $loginuri = '/mlogin?return=' . \urlencode($uri->getPath());
+                        if (!($this->exception instanceof InactiveUserException)) {
+                            $callable = $this->request->getAttribute('__route__')->getCallable();
+                            $settings = $this->container->get('settings');
+                            $uri = $this->request->getUri();
+                            $loginuri = $settings['login_path'].'?return=' . \urlencode($uri->getPath());
+                            if (
+                                    \strpos($callable, 'App\\Actions\\Web\Modules')===0 ||
+                                    \strpos($callable, 'App\\Actions\\Resource')===0
+                                ) {
+                                $loginuri = '/mlogin?return=' . \urlencode($uri->getPath());
+                            }
+                            $response = $this->responseFactory->createResponse(302);
+                            return $response->withHeader('Location', \BASE_PATH . $loginuri);
                         }
-                        $response = $this->responseFactory->createResponse(302);
-                        return $response->withHeader('Location', \BASE_PATH . $loginuri);
                     }
                 }
             }

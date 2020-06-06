@@ -49,6 +49,10 @@ class Container implements ContainerInterface {
         $this->functions[$name] = $callable;
     }
 
+    public function registerFunctions($functions) {
+        $this->functions = $functions;
+    }
+
     public function __call($name, $arguments) {
         if (isset($this->functions[$name])) {
            return $this->functions[$name]($this, ...$arguments);

@@ -7,12 +7,8 @@ return static function ($settings) {
 
     $container = Albatiqy\Slimlibs\Container\Container::getInstance($providers);
     $container->set('settings', $settings);
+    $container->registerFunctions(require LIBS_DIR . '/requires/functions.php');
     $container->mapAlias(Psr\Log\LoggerInterface::class, 'monolog');
-    $container->setFunction('getBaseUrl', function($container, $https=false){
-        $request = $container->get('request');
-        $uri = $request->getUri();
-        return  ($https?'https':$uri->getScheme()) . '://' . $uri->getHost().\BASE_PATH;
-    });
     /*
     $container->defineExtends(Albatiqy\Slimlibs\Providers\Database\DbService::class, function($subclass){
         return $subclass::getInstance();

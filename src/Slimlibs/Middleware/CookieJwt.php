@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpUnauthorizedException;
+use Albatiqy\Slimlibs\Error\Exception\InactiveUserException;
+use Albatiqy\Slimlibs\Providers\Auth\AuthInterface;
 
 final class CookieJwt implements MiddlewareInterface {
 
@@ -31,6 +33,12 @@ final class CookieJwt implements MiddlewareInterface {
             $payload = $jwt->decode($token);
         } catch (\Exception $e) {
             $this->throwUnauthorizedException($request, $callable);
+        }
+
+        $auth = $this->container->get(AuthInterface::class);
+
+        if (!$auth->isUserActive($payload['uid'])) {
+            throw new InactiveUserException($request, $payload['uid']);
         }
 
         $request = $request->withAttribute('payload', $payload);

@@ -6,6 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 abstract class ResultException extends HttpException {
 
+    const E_ANY = -1;
+
     const CODE = 500;
     const MESSAGE = 'Internal server error.';
     const TITLE = '500 Internal Server Error';
@@ -18,6 +20,7 @@ abstract class ResultException extends HttpException {
 
     protected $data = [];
     protected $errType = self::T_UNAUTHORIZED;
+    protected $errCode;
 
     const ERR_TYPES = [
         self::T_UNAUTHORIZED  => 1,
@@ -28,15 +31,16 @@ abstract class ResultException extends HttpException {
 
     abstract protected function init();
 
-    public function __construct(ServerRequestInterface $request, $data = [], $message = '')
+    public function __construct(ServerRequestInterface $request, $data = [], $message = '', $err_code = self::E_ANY)
     {
         //$request = $request->withHeader('Accept', 'application/json'); // do in error handler
         $this->init();
-        if ($message=='') {
+        if (!$message) {
             $message = static::MESSAGE;
         }
         parent::__construct($request, $message, static::CODE);
         $this->data = $data;
+        $this->errCode = $err_code;
     }
 
     public function getData() {
@@ -45,5 +49,9 @@ abstract class ResultException extends HttpException {
 
     public function getErrType() {
         return self::ERR_TYPES[$this->errType];
+    }
+
+    public function getErrCode() {
+        return $this->errCode;
     }
 }
