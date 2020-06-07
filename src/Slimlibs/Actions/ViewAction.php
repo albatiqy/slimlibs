@@ -29,8 +29,7 @@ abstract class ViewAction {
         }
         if (\count($this->configs)==0) {
             $da = $container->get(Configs::class);
-            $cfgcache = require $cfgfcache;
-            $this->configs = $cfgcache['objects'];
+            $this->configs = $da->cacheGetValues();
         }
     }
 
