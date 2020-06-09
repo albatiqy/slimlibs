@@ -3,7 +3,7 @@ namespace Albatiqy\Slimlibs\Error\Exception;
 
 class MaintenanceModeException extends HttpException {
     const CODE = 500;
-    const MESSAGE = 'Kami offline untuk sementara';
+    const MESSAGE = 'Situs Offline';
     const TITLE = 'Maintenance Mode';
     const DESCRIPTION = 'Silakan kembali lagi nanti.';
 }

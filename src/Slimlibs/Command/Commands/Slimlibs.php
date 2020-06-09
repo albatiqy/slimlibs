@@ -167,7 +167,7 @@ final class Slimlibs extends AbstractCommand {
 
     private function parseAuthNotation($class) {
         $doc_block = new DocBlock($class);
-        $result = 0;
+        $result = 1;
         if ($doc_block->tagExists('authorize')) {
             $result = 2;
         } else {

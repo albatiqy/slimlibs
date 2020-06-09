@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Albatiqy\Slimlibs\Result\Exception\UnauthorizedException;
+use Albatiqy\Slimlibs\Result\Exception\NoAccessException;
 use Albatiqy\Slimlibs\Providers\Auth\AuthInterface;
 
 final class Jwt implements MiddlewareInterface {
@@ -23,7 +23,8 @@ final class Jwt implements MiddlewareInterface {
         $authorization = \explode(' ', (string) $request->getHeaderLine('Authorization'));
         $token = $authorization[1] ?? '';
 
-        $callable = $request->getAttribute('__route__')->getCallable();
+        $route = $request->getAttribute('__route__');
+        $callable = $route->getCallable();
 
         if (!$token) {
             $this->throwUnauthorizedException($request, $callable);
@@ -38,9 +39,13 @@ final class Jwt implements MiddlewareInterface {
 
         $auth = $this->container->get(AuthInterface::class);
 
-        if (!$auth->isUserActive($payload['uid'])) {
-            if (!$auth->isSuperUser($payload['uid'])) {
-                throw new UnauthorizedException($request, [], 'Inactive User');
+        if (!$auth->isSuperUser($payload['uid'])) {
+            if (!$auth->isUserActive($payload['uid'])) {
+                throw new NoAccessException($request, [], 'Inactive user');
+            } else {
+                if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
+                    throw new NoAccessException($request, [], 'Not enough role');
+                }
             }
         }
 
@@ -60,9 +65,5 @@ final class Jwt implements MiddlewareInterface {
             $request = $request->withHeader('Accept', 'application/json'); //==================untk skrg hanya menerima json
         }
         throw new UnauthorizedException($request, [], 'Token invalid');
-    }
-
-    private function checkRole($callable) {
-
     }
 }

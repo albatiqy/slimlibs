@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpUnauthorizedException;
-use Albatiqy\Slimlibs\Error\Exception\InactiveUserException;
+use Albatiqy\Slimlibs\Error\Exception\NoAccessException;
 use Albatiqy\Slimlibs\Providers\Auth\AuthInterface;
 
 final class CookieJwt implements MiddlewareInterface {
@@ -19,7 +19,8 @@ final class CookieJwt implements MiddlewareInterface {
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        $callable = $request->getAttribute('__route__')->getCallable();
+        $route = $request->getAttribute('__route__');
+        $callable = $route->getCallable();
 
         $jwt = $this->container->get('jwt');
         $token = $_COOKIE['access_token'] ?? null;
@@ -37,9 +38,13 @@ final class CookieJwt implements MiddlewareInterface {
 
         $auth = $this->container->get(AuthInterface::class);
 
-        if (!$auth->isUserActive($payload['uid'])) {
-            if (!$auth->isSuperUser($payload['uid'])) {
-                throw new InactiveUserException($request, $payload['uid']);
+        if (!$auth->isSuperUser($payload['uid'])) {
+            if (!$auth->isUserActive($payload['uid'])) {
+                throw new NoAccessException($request, $payload['uid'], 'Inactive user', NoAccessException::E_INACTIVE);
+            } else {
+                if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
+                    throw new NoAccessException($request, $payload['uid'], 'Not enough role', NoAccessException::E_ROLE_REQUIRED);
+                }
             }
         }
 

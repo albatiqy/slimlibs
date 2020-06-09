@@ -7,6 +7,7 @@ interface AuthInterface { // add payload??
     public function validateRefreshToken($token);
     public function isUserActive($uid);
     public function isSuperUser($uid);
+    public function hasAccess($uid, $method, $callable);
     public function getLabels();
     public function addPayload($payload);
 }
