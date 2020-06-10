@@ -249,11 +249,24 @@ abstract class MySqlDbService extends DbService {
 
     public function delete($id) {
         $db = $this->db();
-        $this->onTransaction($db, $id, self::RULE_DELETE); // add transaction
-        $stmt = $this->dbDelete($id, $db);
-        if ($stmt->rowCount() > 0) {
-            return true;
-        } else {
+        $affected = false;
+        try {
+            $db->beginTransaction();
+            $this->onTransaction($db, $id, self::RULE_DELETE);
+            $stmt = $this->dbDelete($id, $db);
+            $db->commit();
+            $affected = ($stmt->rowCount() > 0);
+            if ($stmt->rowCount() > 0) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            $db->rollBack();
+            if ($e instanceof \PDOException) {
+                $this->throwPDOException($e);
+            }
+            throw new DbServiceException($e->getMessage(), DbServiceException::E_ANY);
+        }
+        if (!$affected) {
             $this->throwRecordNotFound();
         }
     }
