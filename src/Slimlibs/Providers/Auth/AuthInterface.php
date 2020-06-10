@@ -9,6 +9,6 @@ interface AuthInterface { // add payload??
     public function isSuperUser($uid);
     public function hasAccess($uid, $method, $callable);
     public function getLabels();
-    public function flushRoles();
+    public function flushRoles($route_maps);
     public function addPayload($payload);
 }

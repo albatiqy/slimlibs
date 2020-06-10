@@ -30,9 +30,13 @@ final class Actions {
 
             $preserves = [];
             foreach ($rows as $row) {
-                $preserves[$row->method.'-'.$row->class] = $row->auth;
+                $key = $row->method.'-'.$row->class;
+                $preserves[$key] = $row;
             }
 
+            $maps = [];
+
+            $auth = $this->container->get(AuthInterface::class);
             $db->beginTransaction();
             $affected = $db->exec("TRUNCATE TABLE sys_actions");
             $sql = "REPLACE INTO sys_actions (route_id, method, class, auth) VALUES (:route_id, :method, :class, :auth)"; // nanti hapus on duplicate
@@ -41,14 +45,13 @@ final class Actions {
                 $block = $action->auth;
                 $key = $action->method.'-'.$action->class;
                 if (\array_key_exists($key, $preserves)) {
-                    $block = $preserves[$key];
+                    $block = $preserves[$key]->auth;
+                    $maps[$preserves[$key]->route_id] = $action->route_id;
                 }
                 $stmt->execute([':route_id' => $action->route_id, ':method' => $action->method, ':class' => $action->class, ':auth' => $block]);
             }
+            $auth->flushRoles($maps);
             $db->commit();
-
-            $auth = $this->container->get(AuthInterface::class);
-            $auth->flushRoles();
 
             return true;
         } catch (\Exception $e) {
