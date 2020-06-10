@@ -38,13 +38,11 @@ final class CookieJwt implements MiddlewareInterface {
 
         $auth = $this->container->get(AuthInterface::class);
 
-        if (!$auth->isSuperUser($payload['uid'])) {
-            if (!$auth->isUserActive($payload['uid'])) {
-                throw new NoAccessException($request, $payload['uid'], 'Inactive user', NoAccessException::E_INACTIVE);
-            } else {
-                if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
-                    throw new NoAccessException($request, $payload['uid'], 'Not enough role', NoAccessException::E_ROLE_REQUIRED);
-                }
+        if (!$auth->isUserActive($payload['uid'])) {
+            throw new NoAccessException($request, $payload['uid'], 'Inactive user', NoAccessException::E_INACTIVE);
+        } else {
+            if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
+                throw new NoAccessException($request, $payload['uid'], 'Not enough role', NoAccessException::E_ROLE_REQUIRED);
             }
         }
 

@@ -50,6 +50,10 @@ final class Slimlibs extends AbstractCommand {
         $this->createVarDir('/resources/view/profiles');
         $this->createVarDir('/tmp');
         $this->createVarDir('/users');
+        $this->createVarDir('/users/common');
+        $this->createVarDir('/users/common/roles');
+        $this->createVarDir('/users/common/roles/identify');
+        $this->createVarDir('/users/common/roles/open');
 
         $parent = \APP_DIR . '/var/archive';
         $this->writeLine('creating archive .gitignore');

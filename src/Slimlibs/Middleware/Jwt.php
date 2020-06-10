@@ -39,13 +39,11 @@ final class Jwt implements MiddlewareInterface {
 
         $auth = $this->container->get(AuthInterface::class);
 
-        if (!$auth->isSuperUser($payload['uid'])) {
-            if (!$auth->isUserActive($payload['uid'])) {
-                throw new NoAccessException($request, [], 'Inactive user');
-            } else {
-                if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
-                    throw new NoAccessException($request, [], 'Not enough role');
-                }
+        if (!$auth->isUserActive($payload['uid'])) {
+            throw new NoAccessException($request, [], 'Inactive user');
+        } else {
+            if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
+                throw new NoAccessException($request, [], 'Not enough role');
             }
         }
 
