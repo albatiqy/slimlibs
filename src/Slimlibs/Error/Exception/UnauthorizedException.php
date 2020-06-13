@@ -5,5 +5,5 @@ class UnauthorizedException extends HttpException {
     const CODE = 401;
     const MESSAGE = 'Akses Ditolak';
     const TITLE = 'Unauthorized';
-    const DESCRIPTION = 'Silakan hubungi administrator.';
+    const DESCRIPTION = 'Silakan hubungi administrator';
 }

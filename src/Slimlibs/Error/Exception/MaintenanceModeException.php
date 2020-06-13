@@ -5,5 +5,5 @@ class MaintenanceModeException extends HttpException {
     const CODE = 500;
     const MESSAGE = 'Situs Offline';
     const TITLE = 'Maintenance Mode';
-    const DESCRIPTION = 'Silakan kembali lagi nanti.';
+    const DESCRIPTION = 'Silakan kembali lagi nanti';
 }

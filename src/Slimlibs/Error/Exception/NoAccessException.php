@@ -9,7 +9,7 @@ class NoAccessException extends HttpException {
     const CODE = 403;
     const MESSAGE = 'Akses Ditolak';
     const TITLE = 'Forbidden';
-    const DESCRIPTION = 'Silakan hubungi administrator.';
+    const DESCRIPTION = 'Silakan hubungi administrator';
 
     private $user_id;
 

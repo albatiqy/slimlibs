@@ -7,7 +7,7 @@ class NoAccessException extends ResultException {
 
     const CODE = 403;
     const MESSAGE = 'Access Denied Exception';
-    const TITLE = '403 Access Denied Exception';
+    const TITLE = 'Access Denied Exception';
     const DESCRIPTION = '';
 
     protected function init() {

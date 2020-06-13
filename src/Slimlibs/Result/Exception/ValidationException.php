@@ -7,7 +7,7 @@ class ValidationException extends ResultException {
 
     const CODE = 400;
     const MESSAGE = 'Validation Exception';
-    const TITLE = '400 Validation Exception';
+    const TITLE = 'Validation Exception';
     const DESCRIPTION = '';
 
 

@@ -7,7 +7,7 @@ class UnauthorizedException extends ResultException {
 
     const CODE = 401;
     const MESSAGE = 'Unauthorized Exception';
-    const TITLE = '401 Unauthorized Exception';
+    const TITLE = 'Unauthorized Exception';
     const DESCRIPTION = '';
 
     protected function init() {

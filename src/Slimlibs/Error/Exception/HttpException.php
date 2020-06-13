@@ -8,9 +8,9 @@ abstract class HttpException extends SlimHttpException {
 
     const E_ANY = -1;
     const CODE = 500;
-    const MESSAGE = 'Internal server error.';
-    const TITLE = '500 Internal Server Error';
-    const DESCRIPTION = 'Unexpected condition encountered preventing server from fulfilling request.';
+    const MESSAGE = 'Internal server error';
+    const TITLE = 'Internal Server Error';
+    const DESCRIPTION = 'Unexpected condition encountered preventing server from fulfilling request';
 
     protected $data = [];
     protected $errCode;
