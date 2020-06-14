@@ -95,7 +95,7 @@ abstract class MySqlDbService extends DbService {
         return $this->alterResult($result, self::RESULT_ROW);
     }
 
-    public function findAll($params, $attribs = [], $whereResult = [], $whereAll = [], $table = null) {
+    public function findAll($params, $attribs = [], $whereAll = [], $table = null, $whereResult = []) {
         $db = $this->db();
         if ($table==null) {
             $table = static::TABLE_NAME;
