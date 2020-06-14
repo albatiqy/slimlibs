@@ -43,6 +43,21 @@ abstract class MySqlDbService extends DbService {
         return null;
     }
 
+    protected function getLastIdSeq($db) {
+        if (!$db->inTransaction()) {
+            throw new \Exception(__METHOD__ . " require active transaction");
+        }
+        $primaryKey = self::primaryKeyDefX();
+        $sql = 'select last_val from sys_pk_sequences where pk_name=:pk_name';
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':pk_name' => $primaryKey]);
+        $row = $stmt->fetch();
+        if (\is_object($row)) {
+            return $row->last_val;
+        }
+        return null;
+    }
+
     protected static function defColX($attrib) {
         if (self::$strippedCols[static::ENTITY_NAME][$attrib] ?? null == null) {
             $col = static::COLUMN_DEFS[$attrib]['db'];
@@ -66,7 +81,8 @@ abstract class MySqlDbService extends DbService {
         $idcol = static::PRIMARY_KEY;
         $primaryKey = self::primaryKeyDef();
         $table = static::TABLE_NAME;
-        $sql = "SELECT $columns FROM $table WHERE $primaryKey = :$idcol" . ($extrawhere ? " $extrawhere" : '');
+        $extrawhere = $this->whereSoftDelete($extrawhere);
+        $sql = "SELECT $columns FROM $table WHERE $primaryKey = :$idcol" . ($extrawhere ? " AND $extrawhere" : '');
         $stmt = $db->prepare($sql);
 
         //=============================
@@ -79,15 +95,20 @@ abstract class MySqlDbService extends DbService {
         return $this->alterResult($result, self::RESULT_ROW);
     }
 
-    public function findAll($params, $attribs = [], $whereResult = null, $whereAll = null, $table = null) {
+    public function findAll($params, $attribs = [], $whereResult = [], $whereAll = [], $table = null) {
         $db = $this->db();
         if ($table==null) {
             $table = static::TABLE_NAME;
         }
         $primaryKey = self::primaryKeyDef();
         $bindings = [];
-        $localWhereResult = [];
-        $localWhereAll = [];
+        //$localWhereResult = [];
+        //$localWhereAll = [];
+        if (static::SOFT_DELETE) {
+            $sdcol = self::defCol('deleted_at');
+            $whereResult[] = "$sdcol IS NULL";
+            $whereAll[] = "$sdcol IS NULL";
+        }
         $whereAllSql = '';
         $where = self::filter($params, $bindings, $attribs);
         $whereResult = self::flatten($whereResult);
@@ -111,21 +132,6 @@ abstract class MySqlDbService extends DbService {
         return (object) $this->alterResult($result, self::RESULT_PAGE);
     }
 
-    protected function getLastIdSeq($db) {
-        if (!$db->inTransaction()) {
-            throw new \Exception(__METHOD__ . " require active transaction");
-        }
-        $primaryKey = self::primaryKeyDefX();
-        $sql = 'select last_val from sys_pk_sequences where pk_name=:pk_name';
-        $stmt = $db->prepare($sql);
-        $stmt->execute([':pk_name' => $primaryKey]);
-        $row = $stmt->fetch();
-        if (\is_object($row)) {
-            return $row->last_val;
-        }
-        return null;
-    }
-
     protected function transaction($db, Closure $fn) {
         try {
             $db->beginTransaction();
@@ -135,8 +141,7 @@ abstract class MySqlDbService extends DbService {
             return true;
         } catch (\Exception $e) {
             $db->rollBack();
-            $logger = $this->container->get('monolog');
-            $logger->error($e->getMessage());
+            $this->container->logError($e->getMessage());
             return false;
         }
     }
@@ -150,6 +155,8 @@ abstract class MySqlDbService extends DbService {
             $new_id = null;
             try {
                 $db->beginTransaction();
+                $table = self::tableX();
+                //$db->exec("LOCK TABLES $table WRITE");
                 $stmt = $this->dbInsert($data, $db);
                 if (static::AUTO_ID) {
                     $new_id = $db->lastInsertId();
@@ -157,6 +164,7 @@ abstract class MySqlDbService extends DbService {
                     $new_id = $this->getLastIdTbl($db);
                 }
                 $this->onTransaction($db, $new_id, self::RULE_CREATE);
+                //$db->exec("UNLOCK TABLES"); // is raise exception??
                 $db->commit();
             } catch (\Exception $e) {
                 $db->rollBack();
@@ -278,11 +286,23 @@ abstract class MySqlDbService extends DbService {
         $idcol = static::PRIMARY_KEY;
         $table = self::tableX();
         $primaryKey = self::primaryKeyDefX();
-        $sql = "DELETE FROM $table WHERE $primaryKey = :$idcol";
-        $stmt = $db->prepare($sql);
-        $stmt->execute([
-            ":$idcol" => $id,
-        ]);
+        $stmt = null;
+        if (static::SOFT_DELETE) {
+            $uid = $this->container->getCurrentUserId();
+            $sql = "UPDATE $table SET deleted_by=:deleted_by, deleted_at=:deleted_at WHERE $primaryKey = :$idcol";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                ':deleted_by' => $uid,
+                ':deleted_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+                ":$idcol" => $id,
+            ]);
+        } else {
+            $sql = "DELETE FROM $table WHERE $primaryKey = :$idcol";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                ":$idcol" => $id,
+            ]);
+        }
         return $stmt;
     }
 
@@ -503,5 +523,17 @@ abstract class MySqlDbService extends DbService {
             ]);
         } catch (\Exception $e) {
         }
+    }
+
+    protected function whereSoftDelete($where = '') {
+        if (static::SOFT_DELETE) {
+            $sdcol = self::defCol('deleted_at');
+            if ($where) {
+                $where .= " AND ($sdcol IS NULL)";
+            } else {
+                $where = "$sdcol IS NULL";
+            }
+        }
+        return $where;
     }
 }

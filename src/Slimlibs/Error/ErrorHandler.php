@@ -20,8 +20,7 @@ class ErrorHandler extends SlimErrorHandler {
     }
 
     protected function logError(string $error): void {
-        $logger = $this->container->get('monolog');
-        $logger->error($error);
+        $this->container->logError($error);
     }
 
     protected function respond(): ResponseInterface {

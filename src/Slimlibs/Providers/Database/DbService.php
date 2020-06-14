@@ -9,6 +9,7 @@ abstract class DbService {
 
     const TYPE_STRING = 1;
     const TYPE_NUMERIC = 2;
+    const SOFT_DELETE = false;
 
     protected const RULE_CREATE = 1;
     protected const RULE_UPDATE = 2;

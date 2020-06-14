@@ -516,7 +516,6 @@ final class TelegramBot {
     }
 
     private function log($error) {
-        $logger = $this->container->get('monolog');
-        $logger->info($error);
+        $this->container->logError($error);
     }
 }
