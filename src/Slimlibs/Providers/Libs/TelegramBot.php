@@ -238,25 +238,74 @@ final class TelegramBot {
         $now->setTimestamp($ts);
         $waktu = $now->format('Y-m-d H:i:s');
 
-        $sql = "select a.* from sys_telegram_chqueue a where a.state=1 and a.created_at < :waktu order by a.id limit 0,10";
+        $sql = "select a.* from sys_telegram_chqueue a where a.state=1 and a.created_at < :waktu order by a.id limit 0,20";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':waktu' => $waktu
         ]);
         $rows = $stmt->fetchAll();
+        $data = [];
         foreach ($rows as $row) {
-            $ret = $this->deleteChannelMessage($row->message_id);
+            $ret = null;
+            if ($row->type==0) {
+                $ret = $this->emptyChannelText($row->message_id);
+            } elseif ($row->type==1) {
+                $ret = $this->emptyChannelPhoto($row->message_id);
+            }
+            $data[] = $ret;
         }
+        return $data;
     }
 
-    private function deleteChannelMessage($message_id) {
+    private function emptyChannelText($message_id) {
         if (!$this->token) {
             return null;
         }
-        $url = 'https://api.telegram.org/bot'.$this->token.'/deleteMessage';
+        $url = 'https://api.telegram.org/bot'.$this->token.'/editMessageText';
         $query = [
             'chat_id' => '@'.$this->channelName,
-            'message_id' => $message_id
+            'message_id' => $message_id,
+            'text' => 'dihapus...'
+        ];
+
+        $body = \http_build_query($query);
+
+        $ch = \curl_init();
+        \curl_setopt($ch, \CURLOPT_URL, $url);
+        \curl_setopt($ch, \CURLOPT_POST, 1);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $body);
+        \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . \strlen($body),
+            'Accept: application/json'
+        ]);
+        $result = \curl_exec($ch);
+        if (\curl_errno($ch)) {
+            $error_msg = \curl_error($ch);
+            throw new \Exception($error_msg);
+        }
+        \curl_close($ch);
+        $result = \json_decode($result);
+        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
+            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
+        }
+        return $result;
+    }
+
+    private function emptyChannelPhoto($message_id) {
+        if (!$this->token) {
+            return null;
+        }
+        $url = 'https://api.telegram.org/bot'.$this->token.'/editMessageMedia';
+        $query = [
+            'chat_id' => '@'.$this->channelName,
+            'message_id' => $message_id,
+            'media' => \json_encode([
+                'type' => 'photo',
+                'media' => 'https://p3gtk.kemdikbud.go.id/img/loaders.gif',
+                'caption' => 'dihapus...'
+            ])
         ];
 
         $body = \http_build_query($query);

@@ -18,6 +18,11 @@ final class Telegram extends AbstractTelegramCommand {
      * @map [clearchannel]
      */
     public function clearChannel($arguments, $message, $bot) {
-        $bot->deleteChannelMessages();
+        $data = $bot->deleteChannelMessages();
+        \ob_start();
+        \print_r($data);
+        $obdata = \ob_get_contents();
+        \ob_end_clean();
+        $bot->sendUserText($message->chat->id, $obdata, $message->message_id);
     }
 }
