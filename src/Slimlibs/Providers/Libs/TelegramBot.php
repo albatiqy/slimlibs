@@ -232,6 +232,58 @@ final class TelegramBot {
         return $result;
     }
 
+    public function deleteChannelMessages() {
+        $now = new \DateTime();
+        $ts = $now->getTimestamp() - (60*60*24*4);
+        $now->setTimestamp($ts);
+        $waktu = $now->format('Y-m-d H:i:s');
+
+        $sql = "select a.* from sys_telegram_chqueue a where a.state=1 and a.created_at < :waktu order by a.id limit 0,10";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':waktu' => $waktu
+        ]);
+        $rows = $stmt->fetchAll();
+        foreach ($rows as $row) {
+            $ret = $this->deleteChannelMessage($row->message_id);
+        }
+    }
+
+    private function deleteChannelMessage($message_id) {
+        if (!$this->token) {
+            return null;
+        }
+        $url = 'https://api.telegram.org/bot'.$this->token.'/deleteMessage';
+        $query = [
+            'chat_id' => '@'.$this->channelName,
+            'message_id' => $message_id
+        ];
+
+        $body = \http_build_query($query);
+
+        $ch = \curl_init();
+        \curl_setopt($ch, \CURLOPT_URL, $url);
+        \curl_setopt($ch, \CURLOPT_POST, 1);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $body);
+        \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . \strlen($body),
+            'Accept: application/json'
+        ]);
+        $result = \curl_exec($ch);
+        if (\curl_errno($ch)) {
+            $error_msg = \curl_error($ch);
+            throw new \Exception($error_msg);
+        }
+        \curl_close($ch);
+        $result = \json_decode($result);
+        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
+            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
+        }
+        return $result;
+    }
+
     private function processUpdates() {
         $url = 'https://api.telegram.org/bot'.$this->token.'/getUpdates';
 
