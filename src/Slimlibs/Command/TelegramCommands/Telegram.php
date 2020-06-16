@@ -13,7 +13,7 @@ final class Telegram extends AbstractTelegramCommand {
     }
 
     /**
-     * set bersihkan message dari channel
+     * bersihkan message dari channel
      *
      * @map [clearchannel]
      */

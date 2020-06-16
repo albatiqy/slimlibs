@@ -19,7 +19,7 @@ final class Slimlibs extends AbstractCommand {
      *
      * @alias [initvar]
      */
-    public function initVar() {
+    public function initVar() { // profile dir layout???
         $parent = \APP_DIR . '/var';
         $this->writeLine('removing content ' . $parent);
         Fs::rmDir($parent, false);
