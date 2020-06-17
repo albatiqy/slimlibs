@@ -44,7 +44,8 @@ final class Slimlibs extends AbstractCommand {
         $this->createVarDir('/resources/media/uploads', true);
         $this->createVarDir('/resources/page');
         $this->createVarDir('/resources/page/pages');
-        $this->createVarDir('/resources/page/layout');
+        $lydir = '/resources/page/layout';
+        $this->createVarDir($lydir);
         $this->createVarDir('/resources/templates/mail', true);
         $this->createVarDir('/resources/view/templates', true);
         $this->createVarDir('/resources/view/profiles');
@@ -59,6 +60,15 @@ final class Slimlibs extends AbstractCommand {
         $this->writeLine('creating archive .gitignore');
         $fileout = "!*";
         \file_put_contents($parent . '/.gitignore', $fileout);
+
+        $pfdir = \APP_DIR . '/view/profiles';
+        if (\is_dir($pfdir)) {
+            $dirs = \array_diff(\scandir($pfdir), ['..', '.']);
+            foreach ($dirs as $mfile) {
+                $pfname = \pathinfo($pfdir.'/'.$mfile, \PATHINFO_FILENAME);
+                $this->createVarDir($lydir.'/'.$pfname);
+            }
+        }
     }
 
     /**
