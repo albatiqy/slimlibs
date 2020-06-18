@@ -54,7 +54,11 @@ final class Help extends AbstractCommand {
         $base_dir = \LIBS_DIR . '/cli/commands';
         $this->lstcmd($base_dir, $tf);
         $base_dir = \APP_DIR . '/var/commands';
-        $this->lstcmd($base_dir, $tf);
+        if (\is_dir($base_dir)) {
+            $this->lstcmd($base_dir, $tf);
+        } else {
+            echo "\nplease run \"sudo -u www-data php cli slimlibs initvar\"";
+        }
         echo "\n\n";
         //$this->showHelp();
     }
