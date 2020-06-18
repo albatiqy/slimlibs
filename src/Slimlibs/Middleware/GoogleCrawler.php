@@ -14,11 +14,11 @@ final class GoogleCrawler implements MiddlewareInterface {
         $useragent = $request->getHeaderLine('User-Agent');
         if (\strpos($useragent, 'Google') !== false) {
             if ($this->validateGoogleBotIP(Env::getClientIp())) {
-                $request = $request->withAttribute('google-crawler', true);
+                $request = $request->withAttribute('google-crawler', 'google');
             }
         }
         */
-        $request = $request->withAttribute('google-crawler', true);
+        $request = $request->withAttribute('google-crawler', 'google');
         return $handler->handle($request);
     }
 

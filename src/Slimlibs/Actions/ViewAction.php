@@ -78,7 +78,7 @@ abstract class ViewAction {
         return $this->render();
     }
 
-    protected function render($template) { // [BUAT SEMUA TIPE URL]
+    protected function render($template, $profile=null) { // [BUAT SEMUA TIPE URL]
         $output = '';
         $this->data['args'] = $this->args;
         $this->data['configs'] = $this->configs;
@@ -88,15 +88,16 @@ abstract class ViewAction {
             $pathuri = \substr($this->request->getUri()->getPath(), \strlen(\BASE_PATH));
             $cache = ($pathuri != '/' ? $pathuri : '/index');
             $dirtpl = \dirname($cache);
+            $cache_basedir = $this->settings['cache']['base_dir'].($profile?'/'.$profile.'-pages':'/pages');
             if ($dirtpl != '/') {
-                $mkdir = $this->settings['cache']['base_dir'] . '/pages' . $dirtpl;
+                $mkdir =  $cache_basedir . $dirtpl;
                 if (!\is_dir($mkdir)) {
                     \umask(2);
                     \mkdir($mkdir, 0777, true);
                 }
             }
             $output = $renderer->make($template)->render($this->data);
-            \file_put_contents($this->settings['cache']['base_dir'] . '/pages' . $cache . '.php', $output);
+            \file_put_contents($cache_basedir . $cache . '.php', $output);
         } else { //if $template null?? apa yg mau dirender??
             $output = $renderer->make($template)->render($this->data);
         }
@@ -104,9 +105,9 @@ abstract class ViewAction {
         return $this->response;
     }
 
-    protected function renderProfile($template = null) {
+    protected function renderProfile($template, $cacheprofile = null) {
         $profile = self::setRendererProfile($this->renderer);
-        return $this->render($profile . ($template!=null?'/' . $template:''));
+        return $this->render($profile . '/' . $template, $cacheprofile);
     }
 
     public static function setRendererProfile($renderer) {
