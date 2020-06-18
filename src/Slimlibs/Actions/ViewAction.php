@@ -15,7 +15,7 @@ abstract class ViewAction {
     protected $settings = [];
 
     protected const CACHE = false;
-    protected const CACHE_EXPIRES = 18000;
+    protected const CACHE_EXPIRES = (60*60*24);
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;

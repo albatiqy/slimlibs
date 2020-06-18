@@ -9,29 +9,29 @@ use Albatiqy\Slimlibs\Support\Helper\Env;
 use Albatiqy\Slimlibs\Container\Container;
 use Slim\App;
 
-final class GoogleCrawler implements MiddlewareInterface {
+final class CrawlerPage implements MiddlewareInterface {
 
-    protected const CACHE_EXPIRES = 18000;
+    protected const CACHE_EXPIRES = (60*60*24);
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        $profile = 'google';
+        $profile = 'crawler';
         $useragent = $request->getHeaderLine('User-Agent');
         if (\strpos($useragent, 'Google') !== false) {
             if ($this->validateGoogleBotIP(Env::getClientIp())) {
                 $container = Container::getInstance();
-                $settings = $container->get(App::class);
+                $settings = $container->get('settings');
                 $pathuri = \substr($request->getUri()->getPath(), \strlen(\BASE_PATH));
                 $cacheFile = $settings['cache']['base_dir'] . '/'. $profile.'-pages' . ($pathuri != '/' ? $pathuri : '/index') . '.php';
                 if (\file_exists($cacheFile)) {
                     if (\time()-self::CACHE_EXPIRES < \filemtime($cacheFile)) {
-                        $app = $container->get('app');
+                        $app = $container->get(App::class);
                         $responseFactory = $app->getResponseFactory();
                         $response = $responseFactory->createResponse(200);
                         $response->getBody()->write(\file_get_contents($cacheFile));
                         return $response;
                     }
                 }
-                $request = $request->withAttribute('google-crawler', $profile);
+                $request = $request->withAttribute('crawler-page', $profile);
             }
         }
         return $handler->handle($request);
