@@ -30,7 +30,7 @@ class JSONError extends Error {
         this.httpStatus = status
     }
 }
-const globals = {
+const SlimlibsGlobals = {
     basePath: '<?=BASE_PATH?>',
     backendPath: '<?=$settings['backend_path']?>',
     resTypes: {<?php
@@ -73,5 +73,5 @@ SlimlibsHandleHttpJSONResponse = async function(response) { // text status???
     }
 }
 <?php if ($module):?>
-export {globals, SlimlibsHandleHttpJSONResponse}
+export {SlimlibsGlobals, SlimlibsHandleHttpJSONResponse}
 <?php endif; ?>

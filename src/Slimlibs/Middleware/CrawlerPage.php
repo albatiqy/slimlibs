@@ -11,19 +11,20 @@ use Slim\App;
 
 final class CrawlerPage implements MiddlewareInterface {
 
-    protected const CACHE_EXPIRES = (60*60*24);
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $profile = 'crawler';
         $useragent = $request->getHeaderLine('User-Agent');
         if (\strpos($useragent, 'Google') !== false) {
+            //$route = $request->getAttribute('__route__');
+            //$callable = $route->getCallable();
+            //if ('\\'.$callable::isCacheApplied())
             if ($this->validateGoogleBotIP(Env::getClientIp())) {
                 $container = Container::getInstance();
                 $settings = $container->get('settings');
                 $pathuri = \substr($request->getUri()->getPath(), \strlen(\BASE_PATH));
                 $cacheFile = $settings['cache']['base_dir'] . '/'. $profile.'-pages' . ($pathuri != '/' ? $pathuri : '/index') . '.php';
                 if (\file_exists($cacheFile)) {
-                    if (\time()-self::CACHE_EXPIRES < \filemtime($cacheFile)) {
+                    if (\time()-\Albatiqy\Slimlibs\Actions\ViewAction::getCacheExpires() < \filemtime($cacheFile)) {
                         $app = $container->get(App::class);
                         $responseFactory = $app->getResponseFactory();
                         $response = $responseFactory->createResponse(200);

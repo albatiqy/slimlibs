@@ -124,6 +124,14 @@ abstract class ViewAction {
         return $profile;
     }
 
+    public static function getCacheExpires() {
+        return static::CACHE_EXPIRES;
+    }
+
+    public static function isCacheApplied() {
+        return static::CACHE;
+    }
+
     protected function setHits($args) {}
 
     protected function cacheIdSave($module, $key) {
