@@ -28,13 +28,17 @@ final class DbProxy { // factory class
         switch ($setting['driver']) {
         case 'mysql':
             $dsn = 'mysql:host=' . $setting['hostname'] . ';dbname=' . $setting['database'];
-            $conn = new \PDO($dsn, $setting['username'], $setting['password']);
-            $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $conn->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
             break;
         case 'mssql':
             $dsn = 'sqlsrv:Server=' . $setting['hostname'] . ';Database=' . $setting['database'];
             break;
+        }
+        try {
+            $conn = new \PDO($dsn, $setting['username'], $setting['password']);
+            $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            throw new \Exception($e->getMessage());
         }
         $this->instances[$key] = $conn;
         return $conn;

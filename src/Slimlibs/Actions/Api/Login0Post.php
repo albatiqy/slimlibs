@@ -32,7 +32,7 @@ final class Login0Post extends ResultAction {
             'uid' => $user->user_id,
             'aud' => $jwt_settings['aud'],
             'scopes' => ['user'],
-            'iss' => $jwt_settings['iss'],
+            'iss' => $jwt_settings['iss']
         ];
         $token = $jwt->encode($auth->addPayload($payload));
         $refreshToken = $auth->createRefreshToken($user->user_id);

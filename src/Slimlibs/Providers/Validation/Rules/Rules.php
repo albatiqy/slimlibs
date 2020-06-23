@@ -434,6 +434,50 @@ final class Rules {
 
     public static function nik($value) {
         return self::regexp($value, '/^[0-9]{16}$/');
+        /*
+        //330613050983
+        $wilayah = \substr($value,0,6);
+        $d = (int)\substr($value,6,2);
+        $m = (int)\substr($value,8,2);
+        $y = 2000;
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $y = (int)\substr($value,8,4);
+        $m = (int)\substr($value,12,2);
+        $d = 1;
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $jk = (int)\substr($value,14,1);
+        if (!\in_array($jk, [1,2])) {
+            return false;
+        }
+        */
+    }
+
+    public static function npwp($value) {
+        return self::regexp($value, '/^[0-9]{15}$/');
+        /*
+        //330613050983
+        $wilayah = \substr($value,0,6);
+        $d = (int)\substr($value,6,2);
+        $m = (int)\substr($value,8,2);
+        $y = 2000;
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $y = (int)\substr($value,8,4);
+        $m = (int)\substr($value,12,2);
+        $d = 1;
+        if (!\checkdate($m, $d, $y)) {
+            return false;
+        }
+        $jk = (int)\substr($value,14,1);
+        if (!\in_array($jk, [1,2])) {
+            return false;
+        }
+        */
     }
 
     public static function nip($value) {
