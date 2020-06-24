@@ -65,4 +65,39 @@ class ApiCall {
         }
         throw new RemoteException($result);
     }
+
+    public function authClientVerify($client_id, $key) {
+        if ($this->base_url==null) {
+            throw new \Exception('no base url api call');
+        }
+        $data_string = \json_encode(['client_id' => $client_id]);
+        $ch = \curl_init($this->base_url . '/client/authorize');
+        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
+        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . \strlen($data_string),
+            'Accept: application/json',
+            'Authorization: Bearer '.$key
+        ]);
+        $result = \curl_exec($ch);
+        if (\curl_errno($ch)) {
+            $error_msg = \curl_error($ch);
+            throw new \Exception($error_msg);
+        }
+        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
+        \curl_close($ch);
+        $result = \json_decode($result);
+        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
+            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
+        }
+        if (\property_exists($result, 'resType')) {
+            switch ($result->resType) {
+            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
+                return $result->data;
+            }
+        }
+        throw new RemoteException($result);
+    }
 }

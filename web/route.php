@@ -8,9 +8,8 @@ return static function (SlimApp $app) use ($settings) {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->group('/v0', function (RouteCollectorProxy $group) {
             $group->post('/users/login', Albatiqy\Slimlibs\Actions\Api\Login0Post::class); // <== jgn di jwt
-            //$group->post('/users/token', Albatiqy\Slimlibs\Actions\Api\Token0Post::class); // <== jgn di jwt
             $group->post('/auth/token', Albatiqy\Slimlibs\Actions\Api\Token0Post::class); // <== jgn di jwt
-            $group->post('/client/authorize', Albatiqy\Slimlibs\Actions\Api\ClientAuthorize0Post::class); // <== jgn di jwt
+            $group->post('/auth/client-authorize', Albatiqy\Slimlibs\Actions\Api\ClientAuthorize0Post::class); // <== jgn di jwt
             $group->group('', function (RouteCollectorProxy $group) {
                 $group->group('/sys', function (RouteCollectorProxy $group) {
                     $group->group('/configs', function (RouteCollectorProxy $group) {

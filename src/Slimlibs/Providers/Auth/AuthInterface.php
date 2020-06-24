@@ -3,6 +3,7 @@ namespace Albatiqy\Slimlibs\Providers\Auth;
 
 interface AuthInterface { // add payload??
     public function login($email, $password);
+    public function clientAuthorize($client_id, $key);
     public function createRefreshToken($uid);
     public function validateRefreshToken($token);
     public function isUserActive($uid);
