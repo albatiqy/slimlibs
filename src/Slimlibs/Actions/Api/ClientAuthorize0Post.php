@@ -12,7 +12,7 @@ final class ClientAuthorize0Post extends ResultAction {
         $auth = $this->container->get(AuthInterface::class);
         $user = null;
         try {
-            $user = $auth->clientAuthorize($data['client_id'], $data['key']);
+            $user = $auth->clientAuthorize($data['client_id'], $data['key']); //behalf user?
         } catch (AuthException $ae) {
             $this->sendNotAuthorized($ae->getMessage());
         } catch (\Exception $e) {

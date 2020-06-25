@@ -9,7 +9,7 @@ use Albatiqy\Slimlibs\Providers\Libs\TelegramBot;
 
 final class Login0Post extends ResultAction {
 
-    protected function getResult(array $data, array $args) {
+    protected function getResult(array $data, array $args) { //encrypt???
 
         $auth = $this->container->get(AuthInterface::class);
 
