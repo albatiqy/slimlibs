@@ -106,7 +106,7 @@ abstract class MySqlDbService extends DbService {
         //$localWhereAll = [];
         if (static::SOFT_DELETE) {
             $sdcol = self::defCol('deleted_at');
-            $whereResult[] = "$sdcol IS NULL";
+            //$whereResult[] = "$sdcol IS NULL";
             $whereAll[] = "$sdcol IS NULL";
         }
         $whereAllSql = '';
@@ -158,10 +158,15 @@ abstract class MySqlDbService extends DbService {
                 $table = self::tableX();
                 //$db->exec("LOCK TABLES $table WRITE");
                 $stmt = $this->dbInsert($data, $db);
-                if (static::AUTO_ID) {
+                if (static::AUTO_ID) { // auto id =========================
                     $new_id = $db->lastInsertId();
                 } else {
-                    $new_id = $this->getLastIdTbl($db);
+                    $primaryKey = self::primaryKeyDefX();
+                    if (isset($data[$primaryKey])) {
+                        $new_id = $data[$primaryKey];
+                    } else {
+                        $new_id = $this->getLastIdTbl($db);
+                    }
                 }
                 $this->onTransaction($db, $new_id, self::RULE_CREATE);
                 //$db->exec("UNLOCK TABLES"); // is raise exception??
