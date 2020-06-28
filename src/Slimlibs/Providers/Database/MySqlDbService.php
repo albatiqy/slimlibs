@@ -242,11 +242,13 @@ abstract class MySqlDbService extends DbService {
         $idcol = static::PRIMARY_KEY;
         $cols1 = $cols2 = null;
         $cols3 = '';
-        $binds = self::bindSql($data, $cols1, $cols2, $cols3, ($pkUpd == '' ? [] : [$idcol]));
-        $pkPrms = $idcol;
+        $binds = self::bindSql($data, $cols1, $cols2, $cols3, ($pkUpd == '' ? null : $idcol));
+        $pkPrms = null;
         if ('' !== $pkUpd) {
             $pkPrms = "old_$idcol";
             $binds[":$pkPrms"] = $pkUpd;
+        } else {
+            $pkPrms = $idcol.'1';
         }
         $table = self::tableX();
         $sql = "UPDATE $table SET $cols3 WHERE $idcol = :$pkPrms";
@@ -495,24 +497,28 @@ abstract class MySqlDbService extends DbService {
         return $a;
     }
 
-    private static function bindSql($data, &$cols1 = null, &$cols2 = null, &$cols3 = null, $strips = []) { //add strip some column
+    protected static function bindSql($data, &$cols1 = null, &$cols2 = null, &$cols3 = null, $col3strip=null) { //add strip some column
         $binds = [];
-        if (\count($strips) > 0) {
-            foreach ($strips as $vkey) {
-                unset($data[$vkey]);
-            }
-        }
-        foreach ($data as $key => $input) {
-            $binds[":$key"] = $input;
-        }
         if ($cols1 !== null || $cols3 !== null) {
             $keys = \array_keys($data);
             if (null !== $cols2) {
                 $cols1 = \implode(', ', \array_map(function ($val) {return self::defColX($val);}, $keys));
                 $cols2 = \implode(', ', \array_map(function ($val) {return ":$val";}, $keys));
+                foreach ($keys as $key) {
+                    $binds[":$key"] = $data[$key];
+                }
             }
             if (null !== $cols3) {
-                $cols3 = \implode(', ', \array_map(function ($val) {return "$val = :$val";}, $keys));
+                if ($col3strip!=null) {
+                    $kremove = \array_search($col3strip, $keys);
+                    if ($kremove!==false) {
+                        unset($keys[$kremove]);
+                    }
+                }
+                foreach ($keys as $key) {
+                    $binds[":{$key}1"] = $data[$key];
+                }
+                $cols3 = \implode(', ', \array_map(function ($val) {return "$val = :{$val}1";}, $keys));
             }
         }
         return $binds;
