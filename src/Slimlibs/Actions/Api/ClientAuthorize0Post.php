@@ -5,6 +5,7 @@ use Albatiqy\Slimlibs\Actions\ResultAction;
 use Albatiqy\Slimlibs\Providers\Auth\AuthException;
 use Albatiqy\Slimlibs\Providers\Auth\AuthInterface;
 use Albatiqy\Slimlibs\Result\Results\Data;
+use Albatiqy\Slimlibs\Result\Exception\ValidationException;
 
 final class ClientAuthorize0Post extends ResultAction {
 
@@ -12,10 +13,24 @@ final class ClientAuthorize0Post extends ResultAction {
         $auth = $this->container->get(AuthInterface::class);
         $user = null;
         try {
+            $validator = $this->container->get('validator')([
+                'client_id' => ['required'],
+                'key' => ['required']
+            ]);
+            if (!$validator->validate($data)) {
+                $errors = $validator->getErrors();
+                $this->sendValidationError($errors);
+            }
             $user = $auth->clientAuthorize($data['client_id'], $data['key']); //behalf user?
+            if ($user==null) {
+                throw new \Exception();
+            }
         } catch (AuthException $ae) {
             $this->sendNotAuthorized($ae->getMessage());
         } catch (\Exception $e) {
+            if ($e instanceof ValidationException) {
+                throw $e;
+            }
             $this->sendServiceError($e->getMessage());
         }
         $jwt = $this->jwt;
