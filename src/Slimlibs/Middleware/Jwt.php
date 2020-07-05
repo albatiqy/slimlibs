@@ -48,15 +48,7 @@ final class Jwt implements MiddlewareInterface {
             }
         }
 
-        // Append valid token
-        $request = $request->withAttribute('payload', $payload);
-
-        // Append the user id as request attribute
-        $request = $request->withAttribute('uid', $payload['uid']);
-
-        $this->container->set('payload', $payload);
-
-        return $handler->handle($request);
+        return $handler->handle($auth->requestAppendAttributes($request, $payload));
     }
 
     private function throwUnauthorizedException($request, $callable) {

@@ -7,7 +7,7 @@ return [
         return  ($https?'https':$uri->getScheme()) . '://' . $uri->getHost().\BASE_PATH;
     },
     'getCurrentUserId' => function($container){
-        $payload = $container->get('payload');
+        $payload = $container->get('jwt_payload');
         return $payload['uid'] ?? null;
     },
     'logError' => function($container, $message){

@@ -42,7 +42,6 @@ return static function (SlimApp $app) use ($settings) {
     });
     $app->get('/js/modules/globals.js', Albatiqy\Slimlibs\Actions\Web\GlobalsJsGet::class); // create api global json
     $app->get($settings['login_path'], App\Actions\Web\LoginGet::class);
-    $app->get('/mlogin', App\Actions\Web\Modules\LoginGet::class);
     $app->group('/resources', function (RouteCollectorProxy $group) {
         $group->get('/imgcache/{id}', Albatiqy\Slimlibs\Actions\Resource\ImageCacheGet::class);
         $group->group('/media', function (RouteCollectorProxy $group) {

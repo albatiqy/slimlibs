@@ -46,12 +46,10 @@ final class CookieJwt implements MiddlewareInterface {
             }
         }
 
-        $request = $request->withAttribute('payload', $payload);
-        $request = $request->withAttribute('uid', $payload['uid']);
+        //$request = $request->withAttribute('payload', $payload);
+        //$request = $request->withAttribute('uid', $payload['uid']);
 
-        $this->container->set('payload', $payload);
-
-        return $handler->handle($request);
+        return $handler->handle($auth->requestAppendAttributes($request, $payload));
     }
 
     private function throwUnauthorizedException($request, $callable) {

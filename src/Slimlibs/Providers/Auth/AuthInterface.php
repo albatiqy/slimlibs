@@ -9,7 +9,7 @@ interface AuthInterface { // add payload??
     public function isUserActive($uid);
     public function isSuperUser($uid);
     public function hasAccess($uid, $method, $callable);
-    public function getLabels();
     public function flushRoles($route_maps);
-    public function addPayload($payload);
+    public function jwtAppendPayload($payload);
+    public function requestAppendAttributes($request, $payload);
 }

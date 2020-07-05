@@ -32,8 +32,8 @@ abstract class ResultAction {
         $status = $result->getStatus();
         $this->response = $this->response->withStatus($status);
         if ($status != 204) {
-            $payload = \json_encode($result);
-            $this->response->getBody()->write($payload);
+            $result = \json_encode($result);
+            $this->response->getBody()->write($result);
             $this->response = $this->response
                 ->withHeader('Content-Type', 'application/json');
         }

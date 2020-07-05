@@ -73,14 +73,16 @@ abstract class DbService {
         }
         $attribs = \array_keys($data);
         foreach ($attribs as $attrib) {
-            if ($data[$attrib]==null) {
+            if ($data[$attrib]===null) {
                 if (!(static::COLUMN_DEFS[$attrib]['null']??false)) {
                     unset($data[$attrib]);
                 }
             } else {
-                if (\trim($data[$attrib])=='') {
-                    if (static::COLUMN_DEFS[$attrib]['null']??false===true) {
-                        $data[$attrib] = null;
+                if (\is_string($data[$attrib])) {
+                    if (\trim($data[$attrib])=='') {
+                        if (static::COLUMN_DEFS[$attrib]['null']??false===true) {
+                            $data[$attrib] = null;
+                        }
                     }
                 }
             }

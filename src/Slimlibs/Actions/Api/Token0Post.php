@@ -33,7 +33,7 @@ final class Token0Post extends ResultAction {
             'scopes' => ['user'],
             'iss' => $jwt_settings['iss'],
         ];
-        $token = $jwt->encode($auth->addPayload($payload));
+        $token = $jwt->encode($auth->jwtAppendPayload($payload));
         $refreshToken = $auth->createRefreshToken($user->user_id);
 
         return new Data([
