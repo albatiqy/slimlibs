@@ -95,7 +95,9 @@ final class Image {
                 \file_put_contents($base_dir.'/keys/'.$key, $fcache);
                 \file_put_contents($fmap, $key);
             } else {
-                $key = \file_get_contents($fcache.'.map');
+                if (\file_exists($fcache.'.map')) {
+                    $key = \file_get_contents($fcache.'.map');
+                }
             }
         } else {
             $dir = \dirname($fcache);
