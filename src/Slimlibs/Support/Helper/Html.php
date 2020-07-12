@@ -5,7 +5,7 @@ use Albatiqy\Slimlibs\Support\Helper\Image;
 
 final class Html {
 
-    public static function getImagesSrc($html, $first=false) {
+    public static function getImagesSrc($html, $first = false) {
         if (!$html) {
             return [];
         }
@@ -13,7 +13,7 @@ final class Html {
         \preg_match_all('/\<img[^\>]*[src] *= *[\"\']{0,1}([^\"\']*)/i', $html, $matches); //  /<img(.*?)src=("\'|)(.*?)("|\'| )(.*?)>/s
         $images = $matches[1];
         if ($first) {
-            if (\count($images)>0) {
+            if (\count($images) > 0) {
                 return $images[0];
             }
         }
@@ -24,8 +24,8 @@ final class Html {
             \parse_str($url['query'], $query);
             if (isset($query['file'])) {
                 $prefix = '/resources/media';
-                if (\strpos($query['file'], $prefix)==0) {
-                    $fileImg = $query['file'].'.png';
+                if (\strpos($query['file'], $prefix) == 0) {
+                    $fileImg = $query['file'] . '.png';
                     if ($first) {
                         return $fileImg;
                     }
@@ -43,13 +43,13 @@ final class Html {
             $class = $figure->getAttribute('class');
             $imageSrc = $figure->getAttribute('data-thumbnail');
             switch ($class) {
-                case 'xapp-youtube-media':
-                    $parse_url = \parse_url($imageSrc);
-                    $dir = \dirname($parse_url['path']);
-                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/hqdefault.jpg';
+            case 'xapp-youtube-media':
+                $parse_url = \parse_url($imageSrc);
+                $dir = \dirname($parse_url['path']);
+                $imageSrc = (isset($parse_url['scheme']) ? $parse_url['scheme'] . ':' : '') . '//' . $parse_url['host'] . $dir . '/hqdefault.jpg';
             }
             $key = Image::cache($imageSrc);
-            $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
+            $imageSrc = \BASE_PATH . '/resources/imgcache/' . $key;
             if ($first) {
                 return $imageSrc;
             }
@@ -95,20 +95,19 @@ final class Html {
             $src = $figure->getAttribute('data-src');
             $url = $figure->getAttribute('src');
             switch ($class) {
-                case 'xapp-youtube-media':
-                    $parse_url = \parse_url($imageSrc);
-                    $dir = \dirname($parse_url['path']);
-                    $imageSrc = (isset($parse_url['scheme'])?$parse_url['scheme'].':':'').'//'.$parse_url['host'].$dir.'/hqdefault.jpg';
+            case 'xapp-youtube-media':
+                $parse_url = \parse_url($imageSrc);
+                $dir = \dirname($parse_url['path']);
+                $imageSrc = (isset($parse_url['scheme']) ? $parse_url['scheme'] . ':' : '') . '//' . $parse_url['host'] . $dir . '/hqdefault.jpg';
             }
             $key = Image::cache($imageSrc);
-            $imageSrc = \BASE_PATH.'/resources/imgcache/'.$key;
-            return (object)['url'=>$url, 'src'=>$src, 'class'=>$class, 'thumbnail'=>$imageSrc];
+            $imageSrc = \BASE_PATH . '/resources/imgcache/' . $key;
+            return (object) ['url' => $url, 'src' => $src, 'class' => $class, 'thumbnail' => $imageSrc];
         }
         return null;
     }
 
-    public static function entities($string, $preserve_encoded_entities = false)
-    {
+    public static function entities($string, $preserve_encoded_entities = false) {
         if ($preserve_encoded_entities) {
             // @codeCoverageIgnoreStart
             if (\defined('HHVM_VERSION')) {
@@ -125,8 +124,7 @@ final class Html {
         return \htmlentities($string, \ENT_QUOTES, self::mbInternalEncoding());
     }
 
-    public static function linkify($text)
-    {
+    public static function linkify($text) {
         $text = \preg_replace('/&apos;/', '&#39;', $text); // IE does not handle &apos; entity!
         $section_html_pattern = '%# Rev:20100913_0900 github.com/jmrware/LinkifyURL
             # Section text into HTML <A> tags  and everything else.
@@ -144,8 +142,7 @@ final class Html {
         return \preg_replace_callback($section_html_pattern, array(__CLASS__, 'linkifyCallback'), $text);
     }
 
-    protected static function mbInternalEncoding($encoding = null)
-    {
+    protected static function mbInternalEncoding($encoding = null) {
         if (\function_exists('mb_internal_encoding')) {
             return $encoding ? \mb_internal_encoding($encoding) : \mb_internal_encoding();
         }

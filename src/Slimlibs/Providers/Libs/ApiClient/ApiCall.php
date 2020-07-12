@@ -26,20 +26,24 @@ class ApiCall {
         return $this;
     }
 
-    public function post($endPoint, $data) {
+    public function post($endPoint, $data, $bearer = null) {
         if ($this->base_url==null) {
             throw new \Exception('no base url api call');
         }
         $data_string = \json_encode($data);
         $ch = \curl_init($this->base_url . $endPoint);
+        $headers = [
+            'Content-Type: application/json',
+            'Content-Length: ' . \strlen($data_string),
+            'Accept: application/json'
+        ];
+        if ($bearer!=null) {
+            $headers[] = 'Authorization: Bearer '.$bearer;
+        }
         \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
         \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
         \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . \strlen($data_string),
-            'Accept: application/json',
-        ]);
+        \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
         $result = \curl_exec($ch);
         if (\curl_errno($ch)) {
             $error_msg = \curl_error($ch);
@@ -61,7 +65,7 @@ class ApiCall {
             }
         }
         if (\property_exists($result, 'errType')) {
-            throw new ApiException($result->message, $result->errType);
+            throw new ApiException($result);
         }
         throw new RemoteException($result);
     }

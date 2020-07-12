@@ -4,10 +4,16 @@ namespace Albatiqy\Slimlibs\Providers\Libs\ApiClient;
 class ApiException extends \Exception {
 
     private $res_code;
+    private $object;
 
-    public function __construct($message, $res_code) {
-        $this->res_code = $res_code;
-        parent::__construct($message);
+    public function __construct($object) {
+        $this->res_code = $object->errType;
+        $this->object = $object;
+        parent::__construct($object->message);
+    }
+
+    public function getObject() {
+        return $this->object;
     }
 
     public function getResCode() {

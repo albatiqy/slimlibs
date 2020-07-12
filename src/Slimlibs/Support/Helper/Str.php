@@ -3,41 +3,35 @@ namespace Albatiqy\Slimlibs\Support\Helper;
 
 final class Str {
 
-    public static function stripSpace($string)
-    {
+    public static function stripSpace($string) {
         return \preg_replace('/\s+/', '', $string);
     }
 
-    public static function zeroPad($number, $length)
-    {
+    public static function zeroPad($number, $length) {
         return \str_pad($number, $length, '0', \STR_PAD_LEFT);
     }
 
-    public static function startsWith($string, $starts_with)
-    {
+    public static function startsWith($string, $starts_with) {
         return \strpos($string, $starts_with) === 0;
     }
 
-    public static function endsWith($string, $ends_with)
-    {
+    public static function endsWith($string, $ends_with) {
         return \substr($string, -\strlen($ends_with)) === $ends_with;
     }
 
-    public static function contains($haystack, $needle, $case_sensitive = false)
-    {
+    public static function contains($haystack, $needle, $case_sensitive = false) {
         if ($case_sensitive) {
             return \strpos($haystack, $needle) !== false;
         }
         return \stripos($haystack, $needle) !== false;
     }
 
-    public static function safeTruncate($string, $length, $append = '...')
-    {
-        $ret        = \substr($string, 0, $length);
+    public static function safeTruncate($string, $length, $append = '...') {
+        $ret = \substr($string, 0, $length);
         $last_space = \strrpos($ret, ' ');
 
         if ($last_space !== false && $string != $ret) {
-            $ret     = \substr($ret, 0, $last_space);
+            $ret = \substr($ret, 0, $last_space);
         }
 
         if ($ret != $string) {
