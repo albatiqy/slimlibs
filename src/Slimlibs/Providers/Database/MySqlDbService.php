@@ -440,9 +440,11 @@ abstract class MySqlDbService extends DbService {
         if (!empty($params['orders'])) {
             $orderBy = [];
             foreach ($params['orders'] as $k => $sort) {
-                $dir = ('asc' === $sort['dir'] ? 'ASC' : 'DESC');
-                if (empty(static::COLUMN_DEFS[$sort['column']]['fn'])) {
-                    $orderBy[] = static::COLUMN_DEFS[$sort['column']]['db'] . ' ' . $dir;
+                if (!empty(static::COLUMN_DEFS[$sort['column']])) {
+                    $dir = ('asc' === $sort['dir'] ? 'ASC' : 'DESC');
+                    if (empty(static::COLUMN_DEFS[$sort['column']]['fn'])) {
+                        $orderBy[] = static::COLUMN_DEFS[$sort['column']]['db'] . ' ' . $dir;
+                    }
                 }
             }
             if (\count($orderBy)) {

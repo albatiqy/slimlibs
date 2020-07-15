@@ -26,6 +26,45 @@ class ApiCall {
         return $this;
     }
 
+    public function get($endPoint, $bearer = null) {
+        if ($this->base_url==null) {
+            throw new \Exception('no base url api call');
+        }
+        $ch = \curl_init($this->base_url . $endPoint);
+        $headers = [
+            'Accept: application/json'
+        ];
+        if ($bearer!=null) {
+            $headers[] = 'Authorization: Bearer '.$bearer;
+        }
+        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
+        $result = \curl_exec($ch);
+        if (\curl_errno($ch)) {
+            $error_msg = \curl_error($ch);
+            throw new \Exception($error_msg);
+        }
+        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
+        \curl_close($ch);
+        $result = \json_decode($result);
+        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
+            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
+        }
+        if (\property_exists($result, 'resType')) {
+            switch ($result->resType) {
+            case AbstractResult::RES_TYPES[AbstractResult::T_TABLE]:
+            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
+                return $result->data;
+            default:
+                return true;
+            }
+        }
+        if (\property_exists($result, 'errType')) {
+            throw new ApiException($result);
+        }
+        throw new RemoteException($result);
+    }
+
     public function post($endPoint, $data, $bearer = null) {
         if ($this->base_url==null) {
             throw new \Exception('no base url api call');
