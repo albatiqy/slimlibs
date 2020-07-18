@@ -271,7 +271,7 @@ abstract class MySqlDbService extends DbService {
             $stmt = $this->dbDelete($id, $db);
             $db->commit();
             $affected = ($stmt->rowCount() > 0);
-            if ($stmt->rowCount() > 0) {
+            if ($affected) {
                 return true;
             }
         } catch (\Exception $e) {

@@ -548,7 +548,7 @@ final class TelegramBot {
         ]);
     }
 
-    private function saveUpdateState($updateId) {
+    private function saveUpdateState($updateId) { // REPLACE INTO
         $sql = "INSERT INTO sys_configs (k,v) VALUES ('telegram.lastUpdateId',:v) ON DUPLICATE KEY UPDATE v=:v2";
         $stmt = $this->db->prepare($sql);
         $updateId = (int)$updateId;

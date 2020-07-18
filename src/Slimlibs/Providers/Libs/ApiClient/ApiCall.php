@@ -88,7 +88,7 @@ class ApiCall {
             $error_msg = \curl_error($ch);
             throw new \Exception($error_msg);
         }
-        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
+        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE); // if 204 return null
         \curl_close($ch);
         $result = \json_decode($result);
         if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {

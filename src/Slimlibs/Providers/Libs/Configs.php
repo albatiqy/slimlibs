@@ -23,7 +23,7 @@ final class Configs implements UseObjectCacheInterface {
         return $this->db;
     }
 
-    public function set($key, $value) {
+    public function set($key, $value) { // REPLACE INTO
         $validator = $this->getValidator();
         if ($validator->validate(['k'=>$key, 'v'=>$value])) {
             $db = $this->db();
