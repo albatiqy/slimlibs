@@ -7,15 +7,15 @@ use Albatiqy\Slimlibs\Result\ResultException;
 
 class ApiCall {
 
-    private $token;
     private $base_url = null;
     private $base_endpoint;
-    private $password;
     private $container;
+    private $bearer;
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
         $this->base_endpoint = '/api/v0';
+        $this->bearer = null;
     }
 
     public function setBaseUrl($baseUrl, $baseEndPoint = null) {
@@ -26,149 +26,51 @@ class ApiCall {
         return $this;
     }
 
+    public function setBearer($bearer) {
+        $this->bearer = $bearer;
+        return $this;
+    }
+
     public function get($endPoint, $bearer = null) {
-        if ($this->base_url==null) {
-            throw new \Exception('no base url api call');
-        }
-        $ch = \curl_init($this->base_url . $endPoint);
-        $headers = [
-            'Accept: application/json'
-        ];
-        if ($bearer!=null) {
-            $headers[] = 'Authorization: Bearer '.$bearer;
-        }
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
-        $result = \curl_exec($ch);
-        if (\curl_errno($ch)) {
-            $error_msg = \curl_error($ch);
-            throw new \Exception($error_msg);
-        }
-        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
-        \curl_close($ch);
-        $result = \json_decode($result);
-        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
-        }
-        if (\property_exists($result, 'resType')) {
-            switch ($result->resType) {
-            case AbstractResult::RES_TYPES[AbstractResult::T_TABLE]:
-            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
-                return $result->data;
-            default:
-                return true;
-            }
-        }
-        if (\property_exists($result, 'errType')) {
-            throw new ApiException($result);
-        }
-        throw new RemoteException($result);
+        return $this->apiCall($endPoint, '', [], $bearer);
     }
 
     public function post($endPoint, $data, $bearer = null) {
-        if ($this->base_url==null) {
-            throw new \Exception('no base url api call');
-        }
-        $data_string = \json_encode($data);
-        $ch = \curl_init($this->base_url . $endPoint);
-        $headers = [
-            'Content-Type: application/json',
-            'Content-Length: ' . \strlen($data_string),
-            'Accept: application/json'
-        ];
-        if ($bearer!=null) {
-            $headers[] = 'Authorization: Bearer '.$bearer;
-        }
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
-        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
-        $result = \curl_exec($ch);
-        if (\curl_errno($ch)) {
-            $error_msg = \curl_error($ch);
-            throw new \Exception($error_msg);
-        }
-        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE); // if 204 return null
-        \curl_close($ch);
-        $result = \json_decode($result);
-        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
-        }
-        if (\property_exists($result, 'resType')) {
-            switch ($result->resType) {
-            case AbstractResult::RES_TYPES[AbstractResult::T_TABLE]:
-            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
-                return $result->data;
-            default:
-                return true;
-            }
-        }
-        if (\property_exists($result, 'errType')) {
-            throw new ApiException($result);
-        }
-        throw new RemoteException($result);
+        return $this->apiCall($endPoint, 'POST', $data, $bearer);
     }
 
     public function put($endPoint, $data, $bearer = null) {
-        if ($this->base_url==null) {
-            throw new \Exception('no base url api call');
-        }
-        $data_string = \json_encode($data);
-        $ch = \curl_init($this->base_url . $endPoint);
-        $headers = [
-            'Content-Type: application/json',
-            'Content-Length: ' . \strlen($data_string),
-            'Accept: application/json'
-        ];
-        if ($bearer!=null) {
-            $headers[] = 'Authorization: Bearer '.$bearer;
-        }
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "PUT");
-        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
-        $result = \curl_exec($ch);
-        if (\curl_errno($ch)) {
-            $error_msg = \curl_error($ch);
-            throw new \Exception($error_msg);
-        }
-        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
-        \curl_close($ch);
-        $result = \json_decode($result);
-        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
-        }
-        if (\property_exists($result, 'resType')) {
-            switch ($result->resType) {
-            case AbstractResult::RES_TYPES[AbstractResult::T_TABLE]:
-            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
-                return $result->data;
-            default:
-                return true;
-            }
-        }
-        if (\property_exists($result, 'errType')) {
-            throw new ApiException($result);
-        }
-        throw new RemoteException($result);
+        return $this->apiCall($endPoint, 'PUT', $data, $bearer);
     }
 
     public function delete($endPoint, $data, $bearer = null) {
+        return $this->apiCall($endPoint, 'DELETE', $data, $bearer);
+    }
+
+    private function apiCall($endPoint, $method='', $data = [], $bearer = null) {
         if ($this->base_url==null) {
             throw new \Exception('no base url api call');
         }
-        $data_string = \json_encode($data);
+        if ($bearer==null) {
+            $bearer = $this->bearer;
+        }
+        $data_string = '';
         $ch = \curl_init($this->base_url . $endPoint);
         $headers = [
-            'Content-Type: application/json',
-            'Content-Length: ' . \strlen($data_string),
             'Accept: application/json'
         ];
+        if ($method!='') {
+            $data_string = \json_encode((object)$data);
+            $headers = \array_merge($headers, [
+                'Content-Type: application/json',
+                'Content-Length: ' . \strlen($data_string)
+            ]);
+            \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, $method);
+            \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
+        }
         if ($bearer!=null) {
             $headers[] = 'Authorization: Bearer '.$bearer;
         }
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "DELETE");
-        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
         \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
         \curl_setopt($ch, \CURLOPT_HTTPHEADER, $headers);
         $result = \curl_exec($ch);
@@ -178,6 +80,9 @@ class ApiCall {
         }
         $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
         \curl_close($ch);
+        if ($httpcode==204) {
+            return null;
+        }
         $result = \json_decode($result);
         if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
             throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
@@ -197,38 +102,8 @@ class ApiCall {
         throw new RemoteException($result);
     }
 
+
     public function authClientVerify($client_id, $key) {
-        if ($this->base_url==null) {
-            throw new \Exception('no base url api call');
-        }
-        $data_string = \json_encode(['client_id' => $client_id]);
-        $ch = \curl_init($this->base_url . '/client/authorize');
-        \curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "POST");
-        \curl_setopt($ch, \CURLOPT_POSTFIELDS, $data_string);
-        \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, \CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . \strlen($data_string),
-            'Accept: application/json',
-            'Authorization: Bearer '.$key
-        ]);
-        $result = \curl_exec($ch);
-        if (\curl_errno($ch)) {
-            $error_msg = \curl_error($ch);
-            throw new \Exception($error_msg);
-        }
-        $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
-        \curl_close($ch);
-        $result = \json_decode($result);
-        if ($result === null && \json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \Exception('Malformed JSON Response: '.\json_last_error_msg());
-        }
-        if (\property_exists($result, 'resType')) {
-            switch ($result->resType) {
-            case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
-                return $result->data;
-            }
-        }
-        throw new RemoteException($result);
+        return $this->apiCall('/client/authorize', 'POST', ['client_id' => $client_id], $key);
     }
 }
