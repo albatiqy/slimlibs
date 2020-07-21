@@ -91,7 +91,7 @@ class ApiCall {
             switch ($result->resType) {
             case AbstractResult::RES_TYPES[AbstractResult::T_TABLE]:
             case AbstractResult::RES_TYPES[AbstractResult::T_DATA]:
-                return $result->data;
+                return $result;
             default:
                 return true;
             }

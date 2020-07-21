@@ -95,8 +95,7 @@ final class Configs implements UseObjectCacheInterface {
     public function cacheGetValues() { //[]
         $db = $this->db();
         $sql = "SELECT a.* FROM sys_configs a";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
+        $stmt = $db->query($sql);
         $rows = $stmt->fetchAll();
         $values = [];
         foreach ($rows as $row) {

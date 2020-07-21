@@ -34,8 +34,7 @@ abstract class MySqlDbService extends DbService {
         $primaryKey = self::primaryKeyDefX();
         $table = static::tableX();
         $sql = "select $primaryKey pk01 from $table order by created_at desc limit 0,1";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
+        $stmt = $db->query($sql);
         $row = $stmt->fetch();
         if (\is_object($row)) {
             return $row->pk01;

@@ -492,15 +492,13 @@ final class TelegramBot {
 
     private function getChannelQueue() {
         $sql = "select a.* from sys_telegram_chqueue a where a.state=0 order by a.id limit 0,10";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
 
     private function getUserQueue() {
         $sql = "select a.* from sys_telegram_uqueue a where a.state=0 order by a.id limit 0,6";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
 
@@ -558,8 +556,7 @@ final class TelegramBot {
 
     private function getUpdateState() {
         $sql = "select a.* from sys_configs a where a.k='telegram.lastUpdateId'";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         $row = $stmt->fetch();
         if (\is_object($row)) {
             return $row->v;
@@ -603,8 +600,7 @@ final class TelegramBot {
 
     private function createUsersCache($fcache) {
         $sql = "SELECT a.* FROM sys_telegram_users a";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         $rows = $stmt->fetchAll();
         $values = [];
         foreach ($rows as $row) {

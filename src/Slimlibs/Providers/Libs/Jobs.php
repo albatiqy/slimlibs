@@ -26,16 +26,14 @@ final class Jobs {
     public function remains() {
         $db = $this->db();
         $sql = "select a.* from sys_jobs a where (a.state=0 AND a.schedule IS NULL) order by a.id limit 0,5";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
+        $stmt = $db->query($sql);
         return $stmt->fetchAll();
     }
 
     public function remainSchedules() {
         $db = $this->db();
         $sql = "select a.* from sys_jobs a where (a.state=0 AND a.schedule is NOT NULL) order by a.schedule limit 0,20";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
+        $stmt = $db->query($sql);
         return $stmt->fetchAll();
     }
 

@@ -24,8 +24,7 @@ final class Actions {
         $db = $this->db();
         try {
             $sql = 'SELECT a.* FROM sys_actions a ORDER BY a.class';
-            $stmt = $db->prepare($sql);
-            $stmt->execute();
+            $stmt = $db->query($sql);
             $rows = $stmt->fetchAll();
 
             $preserves = [];
