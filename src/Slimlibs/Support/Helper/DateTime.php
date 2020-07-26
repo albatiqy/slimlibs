@@ -11,6 +11,9 @@ final class DateTime {
     public static $hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"];
 
     public static function rangeFormat($date1, $date2, $separator = null, $input_format = null) {
+        if (!$date1||!$date2) {
+            return '';
+        }
         if ($separator == null) {
             $separator = ' s.d. ';
         }
@@ -36,6 +39,9 @@ final class DateTime {
     }
 
     public static function rangeTimeFormat($date1, $date2, $input_format = null) {
+        if (!$date1||!$date2) {
+            return '';
+        }
         if ($input_format == null) {
             $input_format = self::INPUT_FORMAT;
         }
