@@ -12,7 +12,7 @@ final class TelegramBot {
     private $container;
     private $token;
     private $channelName;
-    private $settings;
+    private $executeUpdates;
     private $users;
     private $db;
 
@@ -31,9 +31,10 @@ final class TelegramBot {
         } else {
             $this->users = $this->createUsersCache($fcache);
         }
-        $this->token = $settings['telegram_bot']['token'];
-        $this->channelName = $settings['telegram_bot']['channelName'];
-        $this->settings = $settings;
+        $bot_settings = $settings['telegram_bot'];
+        $this->token = $bot_settings['token']??null;
+        $this->channelName = $bot_settings['channelName'];
+        $this->executeUpdates = ($bot_settings['executeUpdates']??false==true);
         $this->container = $container;
     }
 
@@ -80,7 +81,9 @@ final class TelegramBot {
                     }
                 }
             }
-            $this->processUpdates();
+            if ($this->executeUpdates) {
+                $this->processUpdates();
+            }
         } catch (\Exception $e) {
             $this->log($e->getMessage());
         }
@@ -121,11 +124,11 @@ final class TelegramBot {
     }
 
     public function sendChannelPhoto($file, $caption) {
-        if (!\file_exists($file)) {
-            return $this->sendChannelText($caption);
-        }
         if (!$this->token) {
             return null;
+        }
+        if (!\file_exists($file)) {
+            return $this->sendChannelText($caption);
         }
         $url = 'https://api.telegram.org/bot'.$this->token.'/sendPhoto';
         $body = [
@@ -194,11 +197,11 @@ final class TelegramBot {
     }
 
     public function sendUserPhoto($chat_id, $file, $caption, $msg_id=null) {
-        if (!\file_exists($file)) {
-            return $this->sendUserText($chat_id, $caption, $msg_id);
-        }
         if (!$this->token) {
             return null;
+        }
+        if (!\file_exists($file)) {
+            return $this->sendUserText($chat_id, $caption, $msg_id);
         }
         $url = 'https://api.telegram.org/bot'.$this->token.'/sendPhoto';
         $body = [
@@ -334,6 +337,9 @@ final class TelegramBot {
     }
 
     private function processUpdates() {
+        if (!$this->token) {
+            return;
+        }
         $url = 'https://api.telegram.org/bot'.$this->token.'/getUpdates';
 
         $updateState = $this->getUpdateState();
@@ -445,22 +451,26 @@ final class TelegramBot {
     }
 
     public function messageChannelText($text) {
-        $sql = "INSERT INTO sys_telegram_chqueue (`type`,`text`,state) VALUES (:type,:text,0)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':type' => 0,
-            ':text' => $text
-        ]);
+        if ($this->token) {
+            $sql = "INSERT INTO sys_telegram_chqueue (`type`,`text`,state) VALUES (:type,:text,0)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':type' => 0,
+                ':text' => $text
+            ]);
+        }
     }
 
     public function messageChannelPhoto($file, $caption) {
-        $sql = "INSERT INTO sys_telegram_chqueue (`type`,`file`,`caption`,state) VALUES (:type,:file,:caption,0)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':type' => 1,
-            ':file' => $file,
-            ':caption' => $caption
-        ]);
+        if ($this->token) {
+            $sql = "INSERT INTO sys_telegram_chqueue (`type`,`file`,`caption`,state) VALUES (:type,:file,:caption,0)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':type' => 1,
+                ':file' => $file,
+                ':caption' => $caption
+            ]);
+        }
     }
 
     public function messageUserText($username, $text) {
