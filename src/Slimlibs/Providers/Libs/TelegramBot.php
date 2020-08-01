@@ -96,7 +96,9 @@ final class TelegramBot {
         $url = 'https://api.telegram.org/bot'.$this->token.'/sendMessage';
         $query = [
             'chat_id' => '@'.$this->channelName,
-            'text' => $text
+            'text' => $text,
+            'parse_mode' => 'HTML',
+            'disable_notification' => true
         ];
         $body = \http_build_query($query);
 
@@ -166,7 +168,9 @@ final class TelegramBot {
         $url = 'https://api.telegram.org/bot'.$this->token.'/sendMessage';
         $query = [
             'chat_id' => $chat_id,
-            'text' => $text
+            'text' => $text,
+            'parse_mode' => 'HTML',
+            'disable_notification' => true
         ];
         if ($msg_id!=null) {
             $query['reply_to_message_id'] = $msg_id;
