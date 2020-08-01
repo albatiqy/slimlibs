@@ -60,6 +60,18 @@ class Container implements ContainerInterface {
         throw new NotFoundException();
     }
 
+    public function create($class, $configs = []) {
+        $nsClass = '\\Albatiqy\\Slimlibs\\Providers\\Creator\\'.$class;
+        if (\class_exists($nsClass)) {
+            $instance = (new $nsClass)($this, $configs);
+            return $instance;
+        } else {
+            $nsClass = '\\App\\Providers\\Creator\\'.$class;
+            $instance = (new $nsClass)($this, $configs);
+            return $instance;
+        }
+    }
+
     public function __get($key) {
         return $this->get($key);
     }
