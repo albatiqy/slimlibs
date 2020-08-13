@@ -8,6 +8,7 @@ abstract class AbstractJob {
     private $log = '';
     private $lockFile = '';
     protected $output = '';
+    protected $job_id;
 
     protected const MAP = 'undefined';
 
@@ -41,13 +42,14 @@ abstract class AbstractJob {
         return $this->output;
     }
 
-    public function run() {
+    public function run($job_id=null) {
         $console = \PHP_SAPI == 'cli' ? true : false;
         if (!$console) {
             throw new \Exception('job harus dijalankan dalam mode cli');
         }
         $result = false;
         try {
+            $this->job_id = $job_id;
             $result = $this->handle();
         } catch (\Exception $e) {
             if (\file_exists($this->lockFile)) {

@@ -151,7 +151,7 @@ final class JobRunner extends AbstractCommand {
                     $output = '';
                     $logs = '';
                     try {
-                        $result = $instance->run();
+                        $result = $instance->run($job->id);
                         $output = $instance->getOutput();
                         $logs = $instance->getLogs();
                         //$da_jobs->flagFinished($job->id);
@@ -185,7 +185,7 @@ final class JobRunner extends AbstractCommand {
                         $output = '';
                         $logs = '';
                         try {
-                            $result = $instance->run();
+                            $result = $instance->run($job->id);
                             $output = $instance->getOutput();
                             $logs = $instance->getLogs();
                             //$da_jobs->flagFinished($job->id);
