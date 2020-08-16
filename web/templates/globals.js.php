@@ -32,7 +32,7 @@ class JSONError extends Error {
 }
 const SlimlibsGlobals = {
     basePath: '<?=BASE_PATH?>',
-    backendPath: '<?=$settings['backend_path']?>',
+    backendPath: '<?=$backend_path?>',
     resTypes: {<?php
 $type = [];
 foreach (Albatiqy\Slimlibs\Result\AbstractResult::RES_TYPES as $i=>$v) {
