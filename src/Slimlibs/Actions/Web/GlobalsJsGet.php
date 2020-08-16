@@ -7,8 +7,9 @@ final class GlobalsJsGet extends ViewAction {
 
     protected function getResponse(array $args) {
         $params = $this->request->getQueryParams();
+        $settings = $this->container->get('settings');
         $this->data['module'] = isset($params['module']);
-        $this->data['settings'] = $this->container->get('settings');
+        $this->data['settings'] = $settings;
         $backend_path = $settings['backend_path'];
         if (isset($params['backendPath'])) {
             $backend_path = $params['backendPath'];
