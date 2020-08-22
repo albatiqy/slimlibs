@@ -23,6 +23,7 @@ abstract class DbService {
     protected const ENTITY_NAME = null;
     protected const COLUMN_DEFS = [];
     protected const AUTO_ID = true;
+    protected const FETCH_ONLY = false;
 
     protected const DB = 'default';
 

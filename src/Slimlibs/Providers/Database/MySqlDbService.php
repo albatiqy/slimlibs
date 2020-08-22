@@ -185,6 +185,9 @@ abstract class MySqlDbService extends DbService {
     }
 
     public function dbInsert($data, $db = null) {
+        if (static::FETCH_ONLY) {
+            throw new \Exception();
+        }
         if ($db==null) {
             $db = $this->db();
         }
@@ -235,6 +238,9 @@ abstract class MySqlDbService extends DbService {
     }
 
     public function dbUpdate($data, $pkUpd = '', $db=null) {
+        if (static::FETCH_ONLY) {
+            throw new \Exception();
+        }
         if ($db==null) {
             $db = $this->db();
         }
@@ -286,6 +292,9 @@ abstract class MySqlDbService extends DbService {
     }
 
     public function dbDelete($id, $db=null) {
+        if (static::FETCH_ONLY) {
+            throw new \Exception();
+        }
         if ($db==null) {
             $db = $this->db();
         }
