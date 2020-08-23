@@ -94,7 +94,7 @@ abstract class MySqlDbService extends DbService {
         return $this->alterResult($result, self::RESULT_ROW);
     }
 
-    public function findAll($params, $attribs = [], $whereAll = [], $table = null, $whereResult = []) {
+    public function findAll($params, $attribs = [], $whereAll = [], $table = null, $whereResult = [], $whereAllBinds = [], $attribsBinds = [], $whereResultBinds = []) {
         $db = $this->db();
         if ($table==null) {
             $table = static::TABLE_NAME;
@@ -112,20 +112,33 @@ abstract class MySqlDbService extends DbService {
         $where = self::filter($params, $bindings, $attribs);
         $whereResult = self::flatten($whereResult);
         $whereAll = self::flatten($whereAll);
+        $resFilterLengthBinds = $rowsBinds = $resTotalLengthBinds = $bindings;
         if ($whereResult) {
             $where = $where ? "$where AND $whereResult" : "WHERE $whereResult";
+            if (\count($whereResultBinds) > 0) {
+                $resFilterLengthBinds += $whereResultBinds;
+                $rowsBinds += $whereResultBinds;
+            }
         }
         if ($whereAll) {
             $where = $where ? "$where AND $whereAll" : "WHERE $whereAll";
             $whereAllSql = "WHERE $whereAll";
+            if (\count($whereAllBinds) > 0) {
+                $resFilterLengthBinds += $whereAllBinds;
+                $rowsBinds += $whereAllBinds;
+                $resTotalLengthBinds += $whereAllBinds;
+            }
         }
-        $resFilterLength = self::sql_exec($db, $bindings, "SELECT COUNT($primaryKey) AS aa1 FROM $table $where");
+        if (\count($attribsBinds) > 0) {
+            $rowsBinds += $attribsBinds;
+        }
+        $resFilterLength = self::sql_exec($db, $resFilterLengthBinds, "SELECT COUNT($primaryKey) AS aa1 FROM $table $where");
         $recordsFiltered = (int) $resFilterLength[0]->aa1;
         $lastPage = 1;
         $limit = self::limit($params, $recordsFiltered, $lastPage);
         $order = self::order($params);
-        $rows = self::sql_exec($db, $bindings, 'SELECT ' . self::selects($attribs) . " FROM $table $where $order $limit");
-        $resTotalLength = self::sql_exec($db, $bindings, "SELECT COUNT($primaryKey) AS aa1 FROM $table $whereAllSql");
+        $rows = self::sql_exec($db, $rowsBinds, 'SELECT ' . self::selects($attribs) . " FROM $table $where $order $limit");
+        $resTotalLength = self::sql_exec($db, $resTotalLengthBinds, "SELECT COUNT($primaryKey) AS aa1 FROM $table $whereAllSql");
         $recordsTotal = (int) $resTotalLength[0]->aa1;
         $result = ['pageCount' => $lastPage, 'recordsFiltered' => $recordsFiltered, 'recordsTotal' => $recordsTotal, 'data' => $rows];
         return (object) $this->alterResult($result, self::RESULT_PAGE);
