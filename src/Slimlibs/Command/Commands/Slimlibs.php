@@ -178,10 +178,10 @@ final class Slimlibs extends AbstractCommand {
         $path = \APP_DIR . '/var'.$dir;
         if ($recursive) {
             $this->writeLine('creating ' . $path  . ' recursively');
-            mkdir($path, 0777, true);
+            \mkdir($path, 0777, true);
         } else {
             $this->writeLine('creating ' . $path);
-            mkdir($path);
+            \mkdir($path);
         }
     }
 

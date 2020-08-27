@@ -621,8 +621,10 @@ final class TelegramBot {
             $values['U'.$row->id] = \json_encode($row);
         }
 
-        $fileout = "<?php\nreturn " . CodeOut::fromArray($values) . ';';
-        \file_put_contents($fcache, $fileout);
+        if (\is_dir(\dirname($fcache))) {
+            $fileout = "<?php\nreturn " . CodeOut::fromArray($values) . ';';
+            @\file_put_contents($fcache, $fileout);
+        }
         return $values;
     }
 
