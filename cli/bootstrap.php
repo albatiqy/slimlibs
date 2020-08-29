@@ -33,7 +33,21 @@ $settings = require LIBS_DIR . '/requires/settings.php';
 $container = (require LIBS_DIR . '/requires/container.php')($settings);
 set_error_handler($container->get('php_error_handler'));
 
-$app = (require LIBS_DIR . '/requires/app.php')($container);
+//$app = (require LIBS_DIR . '/requires/app.php')($container);
+//==================
+//$serverRequestCreator = Slim\Factory\ServerRequestCreatorFactory::create();
+//$request = $serverRequestCreator->createServerRequestFromGlobals(); //used??
+Slim\Factory\AppFactory::setContainer($container);
+$app = Slim\Factory\AppFactory::create();
+$container
+    ->set(Slim\App::class, $app);
+    //->set('request', $request);
+$cacheSettings = $settings['cache'];
+if ($cacheSettings['routes'] ?? false) {
+    $routeCollector = $app->getRouteCollector();
+    $routeCollector->setCacheFile($cacheSettings['base_dir'] . '/routes.php');
+}
+//===================
 
 $cli = new Albatiqy\Slimlibs\Command\Cli($argv);
 $cli->run($container);
