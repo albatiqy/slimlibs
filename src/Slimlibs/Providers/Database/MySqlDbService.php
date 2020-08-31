@@ -112,7 +112,8 @@ abstract class MySqlDbService extends DbService {
         $where = self::filter($params, $bindings, $attribs);
         $whereResult = self::flatten($whereResult);
         $whereAll = self::flatten($whereAll);
-        $resFilterLengthBinds = $rowsBinds = $resTotalLengthBinds = $bindings;
+        $resTotalLengthBinds = [];
+        $resFilterLengthBinds = $rowsBinds = $bindings;
         if ($whereResult) {
             $where = $where ? "$where AND $whereResult" : "WHERE $whereResult";
             if (\count($whereResultBinds) > 0) {
@@ -485,7 +486,7 @@ abstract class MySqlDbService extends DbService {
                 $stmt->bindValue($key, $binding);
             }
 
-            /*
+        /*
         for ($i = 0, $ien = \count($bindings); $i < $ien; $i++) {
         $binding = $bindings[$i];
         $stmt->bindValue($binding['key'], $binding['val']);
