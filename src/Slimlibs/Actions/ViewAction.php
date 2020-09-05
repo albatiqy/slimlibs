@@ -84,6 +84,9 @@ abstract class ViewAction {
         $this->data['configs'] = $this->configs;
         $renderer = $this->renderer;
         $renderer->registerFunction('getBaseUrl', [$this->container, 'getBaseUrl']);
+        $renderer->registerFunction('throwNotFound', function(){
+            $this->throwNotFound();
+        });
         if ($this->settings['cache']['pages'] && static::CACHE) {
             $pathuri = \substr($this->request->getUri()->getPath(), \strlen(\BASE_PATH));
             $cache = ($pathuri != '/' ? $pathuri : '/index');
@@ -179,6 +182,10 @@ abstract class ViewAction {
         return $this->response
             ->withStatus(302)
             ->withHeader('Location', $url);
+    }
+
+    protected function throwNotFound() {
+        throw new \Slim\Exception\HttpNotFoundException($this->request);
     }
 
     public function __get($key) {
