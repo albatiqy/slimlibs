@@ -35,6 +35,7 @@ abstract class ViewAction {
 
     public function __invoke($request, $response, $args) {
         $isMaintenance = $this->configs['app.maintenance_mode']??false;
+        $this->request = $request;
         if ($isMaintenance) {
             //$payload = $request->getAttribute('payload'); // by pass if logged in using cookie jwt
             $path = $request->getAttribute('__route__')->getPattern();
@@ -52,7 +53,7 @@ abstract class ViewAction {
                 return false;
             };
             if (!$pass()) {
-                throw new \Albatiqy\Slimlibs\Error\Exception\MaintenanceModeException($request);
+                $this->throwMaintenanceModeException();
             }
         }
         $this->setHits($args);
@@ -68,7 +69,6 @@ abstract class ViewAction {
                 }
             }
         }
-        $this->request = $request;
         $this->response = $response;
         $this->args = $args;
         return $this->getResponse($args);
@@ -84,9 +84,6 @@ abstract class ViewAction {
         $this->data['configs'] = $this->configs;
         $renderer = $this->renderer;
         $renderer->registerFunction('getBaseUrl', [$this->container, 'getBaseUrl']);
-        $renderer->registerFunction('throwNotFound', function(){
-            $this->throwNotFound();
-        });
         if ($this->settings['cache']['pages'] && static::CACHE) {
             $pathuri = \substr($this->request->getUri()->getPath(), \strlen(\BASE_PATH));
             $cache = ($pathuri != '/' ? $pathuri : '/index');
@@ -184,8 +181,12 @@ abstract class ViewAction {
             ->withHeader('Location', $url);
     }
 
-    protected function throwNotFound() {
+    protected function throwNotFoundException() {
         throw new \Slim\Exception\HttpNotFoundException($this->request);
+    }
+
+    protected function throwMaintenanceModeException() {
+        throw new \Albatiqy\Slimlibs\Error\Exception\MaintenanceModeException($this->request);
     }
 
     public function __get($key) {
