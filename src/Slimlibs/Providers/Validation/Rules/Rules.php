@@ -424,6 +424,15 @@ final class Rules {
         return false;
     }
 
+    public static function tmp_file($value) {
+        $container = \Albatiqy\Slimlibs\Container\Container::getInstance();
+        $tmp_dir = $container->get('settings')['tmp_dir'];
+        if (\file_exists($tmp_dir.'/'.$value)) {
+            return true;
+        }
+        return false;
+    }
+
     public static function image_base64($value) {
         return self::regexp($value, '#^data:image/[^;]+;base64,#');
     }
