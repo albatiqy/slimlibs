@@ -5,11 +5,13 @@ $settings = [
     'log_dir' => APP_DIR . '/var/log',
     'backend_path' => '/admin',
     'login_path' => '/login',
-    'auth_provider' => App\Providers\Auth\Db::class,
     'cache'=>[
         'base_dir' => APP_DIR . '/var/cache',
         'pages' => true,
         'routes' => true
+    ],
+    'container_implements'=> [
+        Albatiqy\Slimlibs\Providers\Auth\AuthInterface::class => App\Providers\Auth\Db::class
     ],
     // Error Handling Middleware settings
     'error_handler_middleware' => [

@@ -3,7 +3,7 @@
 return static function ($settings) {
     $providers = require LIBS_DIR . '/requires/providers.php';
 
-    $providers[Albatiqy\Slimlibs\Providers\Auth\AuthInterface::class] = $settings['auth_provider'];
+    $providers += $settings['container_implements'];
 
     $container = Albatiqy\Slimlibs\Container\Container::getInstance($providers);
     $container->set('settings', $settings);
