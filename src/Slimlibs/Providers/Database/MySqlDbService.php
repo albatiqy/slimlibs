@@ -168,7 +168,7 @@ abstract class MySqlDbService extends DbService {
             $new_id = null;
             try {
                 $db->beginTransaction();
-                $table = self::tableX();
+                //$table = self::tableX();
                 //$db->exec("LOCK TABLES $table WRITE");
                 $stmt = $this->dbInsert($data, $db);
                 if (static::AUTO_ID) { // auto id =========================
