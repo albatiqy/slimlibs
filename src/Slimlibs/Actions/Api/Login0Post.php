@@ -37,9 +37,19 @@ final class Login0Post extends ResultAction {
         $token = $jwt->encode($auth->jwtAppendPayload($payload));
         $refreshToken = $auth->createRefreshToken($user->user_id);
 
-        $telegram = $this->container->get(TelegramBot::class);
-        $telegram->messageUserText('albatiqy', $user->name.' login ke website');
-        //$telegram->messageChannelText($user->name.' login ke website');
+        try {
+            $settings = $this->container->get('settings');
+            $telegram = $this->container->get(TelegramBot::class);
+            if (!empty($settings['service_accounts'])) {
+                if (isset($settings['service_accounts']['default'])) {
+                    $telegram->messageUserText('albatiqy', 'ℹ <b>info</b>: <i>'.$user->name.'</i> <b>login</b> '.$settings['service_accounts']['default']['redirect_uri']);
+                    //$telegram->messageChannelText($user->name.' login ke website');
+                }
+            } else {
+                $telegram->messageUserText('albatiqy', 'ℹ <b>info</b>: <i>'.$user->name.'</i> <b>login</b>');
+            }
+        } catch (\Exception $e) {
+        }
 
         return new Data([
             'access_token' => $token,

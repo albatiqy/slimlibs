@@ -481,12 +481,19 @@ final class TelegramBot {
         $chat_id = $this->findIdByUsername($username);
         if ($chat_id) {
             $sql = "INSERT INTO sys_telegram_uqueue (chat_id,`type`,`text`,state) VALUES (:chat_id,:type,:text,0)";
+            //echo $text;exit;
+            //$text = '';
+            //$text = \str_replace('⚠', '', $text);
+
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([
-                ':chat_id' => $chat_id,
-                ':type' => 0,
-                ':text' => $text
-            ]);
+            try {
+                $stmt->execute([
+                    ':chat_id' => $chat_id,
+                    ':type' => 0,
+                    ':text' => $text
+                ]);
+            } catch (\Exception $e) {
+            }
         }
     }
 
