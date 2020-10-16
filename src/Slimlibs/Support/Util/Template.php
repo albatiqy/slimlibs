@@ -4,7 +4,7 @@ namespace Albatiqy\Slimlibs\Support\Util;
 final class Template {
 
     static $blocks = [];
-	static $cache_path = APP_DIR.'/var/tmp/template-cache/';
+	static $cache_path = \APP_DIR.'/var/tmp/template-cache/';
 	static $cache_enabled = FALSE;
 
 	static function view($file, $data = []) {
@@ -14,7 +14,7 @@ final class Template {
 	}
 
 	static function cache($file) {
-		if (!\file_exists(self::$cache_path)) {
+		if (!\is_dir(self::$cache_path)) {
 		  	\mkdir(self::$cache_path, 0744);
 		}
 	    $cached_file = self::$cache_path . \str_replace(['/', '.html'], ['_', ''], $file . '.php');
