@@ -15,16 +15,19 @@ final class Cors implements MiddlewareInterface {
         $routingResults = $routeContext->getRoutingResults();
         $methods = $routingResults->getAllowedMethods();
         $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+        $requestOrigin = $request->getHeaderLine('Origin');
 
         $response = $handler->handle($request);
 
         $response = $response
-            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Origin', $requestOrigin ?: '*') // *
             ->withHeader('Access-Control-Allow-Methods', \implode(', ', $methods))
-            ->withHeader('Access-Control-Allow-Headers', $requestHeaders ?: '*');
+            ->withHeader('Access-Control-Allow-Headers', $requestHeaders ?: '*')
+            ->withHeader('Access-Control-Expose-Headers', '*');
 
         // Optional: Allow Ajax CORS requests with Authorization header
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        //$response = $response->withHeader('Set-Cookie', 'fdsfsd=fsdfsfd; SameSite=Strict');
 
         return $response;
     }
