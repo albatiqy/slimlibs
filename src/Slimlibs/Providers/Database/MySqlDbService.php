@@ -94,16 +94,19 @@ abstract class MySqlDbService extends DbService {
         return $this->alterResult($result, self::RESULT_ROW);
     }
 
-    public function findAll($params, $attribs = [], $whereAll = [], $table = null, $whereResult = [], $whereAllBinds = [], $attribsBinds = [], $whereResultBinds = []) {
+    public function findAll($params, $attribs = [], $whereAll = [], $table = null, $whereResult = [], $whereAllBinds = [], $attribsBinds = [], $whereResultBinds = [], $softDelete=null) {
         $db = $this->db();
         if ($table==null) {
             $table = static::TABLE_NAME;
+        }
+        if ($softDelete===null) {
+            $softDelete = static::SOFT_DELETE;
         }
         $primaryKey = self::primaryKeyDef();
         $bindings = [];
         //$localWhereResult = [];
         //$localWhereAll = [];
-        if (static::SOFT_DELETE) {
+        if ($softDelete) {
             $sdcol = self::defCol('deleted_at');
             //$whereResult[] = "$sdcol IS NULL";
             $whereAll[] = "$sdcol IS NULL";
