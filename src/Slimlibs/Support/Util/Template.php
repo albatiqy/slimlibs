@@ -13,6 +13,14 @@ final class Template {
 	   	require $cached_file;
 	}
 
+	static function fetch($file, $data = []) {
+		\ob_start();
+		self::view($file, $data);
+		$output = \ob_get_contents();
+		\ob_end_clean();
+		return $output;
+	}
+
 	static function cache($file) {
 		if (!\is_dir(self::$cache_path)) {
 		  	\mkdir(self::$cache_path, 0744);
