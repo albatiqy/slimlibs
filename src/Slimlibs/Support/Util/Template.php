@@ -43,8 +43,8 @@ final class Template {
 	static function compileCode($code) {
 		$code = self::compileBlock($code);
 		$code = self::compileYield($code);
-		$code = self::compileEchos($code);
 		$code = self::compileEscapedEchos($code);
+		$code = self::compileEchos($code);
 		$code = self::compilePHP($code);
 		return $code;
 	}
