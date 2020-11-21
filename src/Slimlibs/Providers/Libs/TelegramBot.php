@@ -383,7 +383,7 @@ final class TelegramBot {
                                 if (\property_exists($message, 'from')) {
                                     $from = $message->from;
                                     if (!\array_key_exists('U'.$from->id, $this->users)) {
-                                        $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name??'', $from->username??null, $from->language_code);
+                                        $this->appendUser($from->id, $from->is_bot, $from->first_name, $from->last_name??'', $from->username??null, $from->language_code??null);
                                     }
                                 }
                             break;
