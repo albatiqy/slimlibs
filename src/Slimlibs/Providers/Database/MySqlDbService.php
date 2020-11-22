@@ -524,12 +524,12 @@ abstract class MySqlDbService extends DbService {
         return $a;
     }
 
-    protected static function bindSql($data, &$cols1 = null, &$cols2 = null, &$cols3 = null, $col3strip=null) { //add strip some column
+    protected static function bindSql($data, &$cols1 = null, &$cols2 = null, &$cols3 = null, $col3strip=null, $useColDefs=true) { //add strip some column
         $binds = [];
         if ($cols1 !== null || $cols3 !== null) {
             $keys = \array_keys($data);
             if (null !== $cols2) {
-                $cols1 = \implode(', ', \array_map(function ($val) {return self::defColX($val);}, $keys));
+                $cols1 = \implode(', ', \array_map(function ($val) use ($useColDefs) {return ($useColDefs?self::defColX($val):$val);}, $keys));
                 $cols2 = \implode(', ', \array_map(function ($val) {return ":$val";}, $keys));
                 foreach ($keys as $key) {
                     $binds[":$key"] = $data[$key];
