@@ -7,6 +7,7 @@ final class Data extends AbstractResult {
 
     const STATUS_OK = 200;
     const STATUS_CREATED = 201;
+    const STATUS_ACCEPTED = 202;
 
     public $data = [];
 

@@ -2,5 +2,5 @@
 namespace Albatiqy\Slimlibs\Providers\Libs\Interfaces;
 
 interface Mailer {
-    public function sendMessage($to, $subject, $messageText);
+    public function sendMessage($to, $subject, $messageText, $fattachment = null);
 }
