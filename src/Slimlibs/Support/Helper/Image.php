@@ -66,6 +66,7 @@ final class Image {
         if (\strpos($url, '//')===0) {
             $url = 'http:'.$url;
         }
+        $url = \str_replace(' ', '%20', $url);
         $parse_url = \parse_url($url);
         $base_dir = \APP_DIR . '/var/resources/imgcache';
         $fcache = $base_dir.'/srcs/'.$parse_url['host'].$parse_url['path'];
@@ -85,8 +86,10 @@ final class Image {
                 \curl_setopt($ch, \CURLOPT_FILE, $fp);
                 \curl_setopt($ch, \CURLOPT_HEADER, 0);
                 \curl_exec($ch);
+                $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
                 \curl_close($ch);
                 \fclose($fp);
+                $accepted = (($httpcode>=200 && $httpcode<300)||$httpcode==304);
                 $fmap = $fcache.'.map';
                 $key = \strtolower(\base_convert(\time().\rand(1,9),10,36));
                 if (\file_exists($fmap)) {
@@ -116,6 +119,7 @@ final class Image {
             \curl_setopt($ch, \CURLOPT_FILE, $fp);
             \curl_setopt($ch, \CURLOPT_HEADER, 0);
             \curl_exec($ch);
+            $httpcode = \curl_getinfo($ch, \CURLINFO_HTTP_CODE);
             \curl_close($ch);
             \fclose($fp);
             $fmap = $fcache.'.map';

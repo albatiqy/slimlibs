@@ -92,6 +92,21 @@ final class Html {
             $html = $mock->saveHTML();
 */
 
+/*
+function DOMinnerHTML(DOMNode $element)
+{
+    $innerHTML = "";
+    $children  = $element->childNodes;
+
+    foreach ($children as $child)
+    {
+        $innerHTML .= $element->ownerDocument->saveHTML($child);
+    }
+
+    return $innerHTML;
+} 
+*/
+
     public static function findFirstMedia($html) {
         if (!$html) {
             return null;
