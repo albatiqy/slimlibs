@@ -80,7 +80,7 @@ final class Configs implements UseObjectCacheInterface {
     private function getValidator() {
         return $this->container->get('validator')([
             'k' => ['regexp' => '/^[\w.]{5,}$/'],
-            'v' => ['required']
+            'v' => []
         ]);
     }
 
