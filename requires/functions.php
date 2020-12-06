@@ -4,7 +4,7 @@ return [
     'getBaseUrl' => function($container, $https=false){
         $request = $container->get('request');
         $uri = $request->getUri();
-        return  ($https?'https':$uri->getScheme()) . '://' . $uri->getHost().\BASE_PATH;
+        return  ($https?'https':$uri->getScheme()) . '://' . $uri->getHost().BASE_PATH;
     },
     'getCurrentUserId' => function($container){
         $payload = $container->get('jwt_payload');

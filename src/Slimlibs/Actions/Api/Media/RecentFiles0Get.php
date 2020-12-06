@@ -7,7 +7,7 @@ use Albatiqy\Slimlibs\Support\Helper\Format;
 
 final class RecentFiles0Get extends ResultAction { // cache count max files?
 
-    protected function getResult(array $data, array $args) { // harus diganti!!!!!!!!!!
+    protected function getResult(array $data, array $args) { // harus diganti!!!!!!!!!! directory iterator sort by date
         $dir = \APP_DIR . '/var/resources/media';
         $basepos = \strlen($dir);
 

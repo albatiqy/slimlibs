@@ -13,7 +13,7 @@ abstract class MsSqlDbService extends DbService {
         if (isset($data['size'])) {
             $size = 10;
             if (!empty($data['size'])) {
-                $size = intval($data['size']);
+                $size = \intval($data['size']);
             }
             if ($size < 1) {
                 $size = 10;
@@ -24,7 +24,7 @@ abstract class MsSqlDbService extends DbService {
             $page = 1;
             if ($lastPage > 0) {
                 if (!empty($data['page'])) {
-                    $page = intval($data['page']);
+                    $page = \intval($data['page']);
                 }
                 if ($page < 1) {
                     $page = 1;
