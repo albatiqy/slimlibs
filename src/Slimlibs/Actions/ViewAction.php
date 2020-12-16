@@ -93,7 +93,7 @@ abstract class ViewAction {
                 $mkdir =  $cache_basedir . $dirtpl;
                 if (!\is_dir($mkdir)) {
                     \umask(2);
-                    \mkdir($mkdir, 0777, true);
+                    \mkdir($mkdir, 0777, true); //file_exists warning!!===============
                 }
             }
             $output = $renderer->make($template)->render($this->data);

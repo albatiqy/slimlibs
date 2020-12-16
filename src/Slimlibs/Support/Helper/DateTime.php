@@ -83,4 +83,13 @@ final class DateTime {
         $src = \DateTime::createFromFormat($input_format, $date);
         return ($hari?self::$hari[$src->format("w")].', ':'').$src->format("j").' '.self::$bulan[$src->format("n")].' '.$src->format("Y");
     }
+
+    public static function dateTimeFormat($date, $input_format = null) {
+        if ($input_format == null) {
+            $input_format = self::INPUT_FORMAT;
+        }
+        $src = \DateTime::createFromFormat($input_format, $date);
+        return self::$hari[$src->format("w")].', '.$src->format("j").' '.self::$bulan[$src->format("n")].' '.$src->format("Y").' pukul '.$src->format("H:i").' WIB';
+    }
+
 }

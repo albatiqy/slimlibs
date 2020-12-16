@@ -42,6 +42,7 @@ final class Slimlibs extends AbstractCommand {
         $this->createVarDir('/resources/imgcache/keys');
         $this->createVarDir('/resources/imgcache/srcs');
         $this->createVarDir('/resources/media/uploads', true);
+        $this->createVarDir('/resources/media-index/recents', true);
         /*
         $this->createVarDir('/resources/page');
         $this->createVarDir('/resources/page/pages');
