@@ -83,6 +83,10 @@ abstract class ResultAction {
         throw new Exception\ServiceException($this->request, [], $message);
     }
 
+    protected function sendBadRequestError($message = '') {
+        throw new Exception\BadRequestException($this->request, [], $message);
+    }
+
     protected function sendServerError($message = '') {
         throw new HttpInternalServerErrorException($this->request, $message);
     }

@@ -16,6 +16,7 @@ abstract class ResultException extends HttpException {
     const T_SERVICE = 'SERVICE';
     const T_VALIDATION = 'VALIDATION';
     const T_NOT_EXIST = 'NOT_EXIST';
+    const T_BAD_REQUEST = 'BAD_REQUEST';
 
     protected $data = [];
     protected $errType = self::T_UNAUTHORIZED;
@@ -25,7 +26,8 @@ abstract class ResultException extends HttpException {
         self::T_SERVICE  => 2,
         self::T_VALIDATION  => 3,
         self::T_NOT_EXIST  => 4,
-        self::T_NO_ACCESS  => 5
+        self::T_NO_ACCESS  => 5,
+        self::T_BAD_REQUEST  => 6
     ];
 
     abstract protected function init();
