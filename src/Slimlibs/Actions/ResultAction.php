@@ -26,7 +26,7 @@ abstract class ResultAction {
         $result = $this->getResult($data, $args);
 
         if ($result==null) {
-            $this->sendServiceError("Empty result");
+            $this->sendBadRequestError("Empty result");
         }
 
         $status = $result->getStatus();

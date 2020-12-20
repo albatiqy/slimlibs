@@ -31,7 +31,7 @@ final class ClientAuthorize0Post extends ResultAction {
             if ($e instanceof ValidationException) {
                 throw $e;
             }
-            $this->sendServiceError($e->getMessage());
+            $this->sendBadRequestError($e->getMessage());
         }
         $jwt = $this->jwt;
         $jwt_settings = ($this->settings)['jwt'];
