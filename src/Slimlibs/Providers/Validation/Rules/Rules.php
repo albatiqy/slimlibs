@@ -391,6 +391,7 @@ final class Rules {
                 switch (\strtoupper($t)) {
                 case 'IMAGE':
                 case 'JPEG':
+                case 'JFIF':
                 case 'JPG':
                 case 'PNG':
                 case 'GIF':

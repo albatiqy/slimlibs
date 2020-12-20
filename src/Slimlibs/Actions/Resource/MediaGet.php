@@ -13,6 +13,7 @@ final class MediaGet extends ResourceAction {
             $extension = \pathinfo($filein, \PATHINFO_EXTENSION);
             switch (\strtoupper($extension)) {
                 case 'JPG':
+                case 'JFIF':
                 case 'JPEG':
                     $extension = 'JPG';
                 case 'PNG':
@@ -38,6 +39,7 @@ final class MediaGet extends ResourceAction {
             $type = \explode('/', $accept);
             switch (\strtoupper($type[1])) {
                 case 'JPG':
+                case 'JFIF':
                 case 'JPEG':
                     $response = $this->renderImg($accept, \LIBS_DIR.'/web/resources/blank.jpg');
                     return $response->withStatus(404);
