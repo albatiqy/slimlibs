@@ -427,7 +427,7 @@ final class Rules {
 
     public static function tmp_file($value) {
         $container = \Albatiqy\Slimlibs\Container\Container::getInstance();
-        $tmp_dir = $container->get('settings')['tmp_dir'];
+        $tmp_dir = \APP_DIR.'/var/tmp';
         if (\file_exists($tmp_dir.'/'.$value)) {
             return true;
         }

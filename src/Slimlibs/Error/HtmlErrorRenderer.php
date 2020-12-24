@@ -22,7 +22,7 @@ class HtmlErrorRenderer extends ParentHtmlErrorRenderer {
             $request = $exception->getRequest();
             $accepts = \explode(',', $request->getHeader('Accept')[0]);
             $data = [
-                'mpa' => (\count($accepts) > 1),
+                'mainView' => (\count($accepts) > 1),
                 'exception' => $exception,
                 'displayErrorDetails' => $displayErrorDetails
             ];
