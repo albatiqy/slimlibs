@@ -39,6 +39,15 @@ final class CookieJwt implements MiddlewareInterface {
         $auth = $this->container->get(AuthInterface::class);
 
         if (!$auth->isUserActive($payload['uid'])) {
+            // ===========temp==
+            $configsf = \APP_DIR . '/var/cache/object-configs.php';
+            if (\file_exists($configsf)) {
+                $configsf = require $configsf;
+                if ($configsf['app.maintenance_mode']??false) {
+                    throw new \Albatiqy\Slimlibs\Error\Exception\MaintenanceModeException($request);
+                }
+            }
+            //===================
             throw new NoAccessException($request, $payload['uid'], 'Inactive user', NoAccessException::E_INACTIVE);
         } else {
             if (!$auth->hasAccess($payload['uid'], $route->getMethods()[0], $callable)) {
