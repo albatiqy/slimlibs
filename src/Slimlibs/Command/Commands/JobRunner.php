@@ -189,13 +189,10 @@ final class JobRunner extends AbstractCommand {
                             $output = $instance->getOutput();
                             $logs = $instance->getLogs();
                             //$da_jobs->flagFinished($job->id);
-                            if ($result===true) {
-                                $da_jobs->setResult($job->id, Jobs::STATE_FINISHED, \substr($logs,0,1000), \substr($output,0,2000));
+                            if ($result===false) {
+                                $da_jobs->retrySchedule($job->id);
                             } else {
-                                if ($result===false) {
-                                    //$da_jobs->setResult($job->id, Jobs::STATE_ERROR, \substr($e->getMessage()."\r\n".$logs,0,1000), \substr($output,0,2000));
-                                    $da_jobs->retrySchedule($job->id);
-                                }
+                                $da_jobs->setResult($job->id, Jobs::STATE_FINISHED, \substr($logs,0,1000), \substr($output,0,2000));
                             }
                         } catch (\Exception $e) {
                             $da_jobs->setResult($job->id, Jobs::STATE_ERROR, \substr($e->getMessage()."\r\n".$logs,0,1000), \substr($output,0,2000));
