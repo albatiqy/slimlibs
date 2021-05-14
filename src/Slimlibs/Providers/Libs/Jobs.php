@@ -118,6 +118,26 @@ final class Jobs {
         }
     }
 
+    public function retrySchedule($job_id) {
+        $db = $this->db();
+        $sql = "select a.* from sys_jobs a where a.id=:id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':id' => $job_id
+        ]);
+        $row = $stmt->fetch();
+        if (\is_object($row)) {
+            if ($row->schedule) {
+                $stmt = $db->prepare(
+                    'UPDATE sys_jobs SET schedule=NULL, state=0 WHERE id=:id'
+                );
+                $stmt->execute([
+                    ':id' => $job_id
+                ]);
+            }
+        }
+    }
+
     public function setResult($id, $state, $logs = null, $output = null) {
         $db = $this->db();
         $stmt = $db->prepare(
